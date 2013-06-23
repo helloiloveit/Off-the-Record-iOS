@@ -31,6 +31,8 @@
 #import "Appirater.h"
 #import "OTRConstants.h"
 #import "OTRLanguageManager.h"
+#import "OTRConvertAccount.h"
+#import "OTRUtilities.h"
 
 #import "OnionKitTest.h"
 
@@ -47,7 +49,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 // error reporting support.
 #ifdef CRITTERCISM_ENABLED
 #import "Crittercism.h"
-#import "OTRCrittercismSecrets.h"
+#import "OTRSecrets.h"
 #endif
 
 @implementation OTRAppDelegate
@@ -59,6 +61,32 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     OnionKitTest * oKitTest = [[OnionKitTest alloc] init];
+    // DATABASE TESTS
+    NSString * storeFileName = @"db.sqlite";
+    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:storeFileName];
+    NSURL * fileURL = [NSPersistentStore MR_urlForStoreName:storeFileName];
+    
+    NSDictionary *fileAttributes = [NSDictionary dictionaryWithObject:NSFileProtectionCompleteUnlessOpen forKey:NSFileProtectionKey];
+    NSError * error = nil;
+    
+    if (![[NSFileManager defaultManager] setAttributes:fileAttributes ofItemAtPath:[fileURL path] error:&error])
+    {
+        NSLog(@"error encrypting store");
+    }
+    
+    //NSPersistentStoreCoordinator *storeCoordinator = [OTRDatabaseUtils persistentStoreCoordinatorWithDBName:@"db.sqlite" passphrase:@"test"];
+    
+    //[NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:storeCoordinator];
+    
+    
+    
+    //CONVERT LEGACY ACCOUNT DICTIONARIES
+    OTRConvertAccount * accountConverter = [[OTRConvertAccount alloc] init];
+    if ([accountConverter hasLegacyAccountSettings]) {
+        [accountConverter convertAllLegacyAcountSettings];
+    }
+    
+    
 #ifdef CRITTERCISM_ENABLED
     if([OTRSettingsManager boolForOTRSettingKey:kOTRSettingKeyCrittercismOptIn])
     {
@@ -71,6 +99,9 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     }
 #endif
     
+    [OTRUtilities deleteAllBuddiesAndMessages];
+    
+    [OTRManagedAccount resetAccountsConnectionStatus];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
@@ -98,6 +129,8 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     application.applicationIconBadgeNumber = 0;
   
     [Appirater appLaunched:YES];
+    
+    
     
     return YES;
 }
@@ -150,11 +183,21 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
         }
         self.didShowDisconnectionWarning = YES;
     }
-    if ([application backgroundTimeRemaining] < 10) 
+    if ([application backgroundTimeRemaining] < 10)
     {
         // Clean up here
         [self.backgroundTimer invalidate];
         self.backgroundTimer = nil;
+        
+        OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
+        for(id key in protocolManager.protocolManagers)
+        {
+            id <OTRProtocol> protocol = [protocolManager.protocolManagers objectForKey:key];
+            [protocol disconnect];
+        }
+        [OTRManagedAccount resetAccountsConnectionStatus];
+        
+        
         [application endBackgroundTask:self.backgroundTask];
         self.backgroundTask = UIBackgroundTaskInvalid;
     }
@@ -170,7 +213,9 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
      */
+    
     NSLog(@"Application became active");
+    
     if (self.backgroundTimer) 
     {
         [self.backgroundTimer invalidate];
@@ -181,7 +226,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
         [application endBackgroundTask:self.backgroundTask];
         self.backgroundTask = UIBackgroundTaskInvalid;
     }
-    
+    [OTRManagedAccount resetAccountsConnectionStatus];
     application.applicationIconBadgeNumber = 0;
 }
 
@@ -196,30 +241,15 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     
     OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
     
-    for(id key in protocolManager.protocolManagers)
+    for(id key in [protocolManager.protocolManagers allKeys])
     {
         id <OTRProtocol> protocol = [protocolManager.protocolManagers objectForKey:key];
         [protocol disconnect];
     }
+    [OTRManagedAccount resetAccountsConnectionStatus];
+    [OTRUtilities deleteAllBuddiesAndMessages];
     
-    /*
-    NSPersistentStoreCoordinator *storeCoordinator = [protocolManager.xmppManager.xmppRosterStorage
- persistentStoreCoordinator];
-     NSArray *stores = [storeCoordinator persistentStores];
-     
-     for(NSPersistentStore *store in stores)
-     {
-     NSError *error = nil;
-     NSError *error2 = nil;
-     NSURL *storeURL = store.URL;
-     [storeCoordinator removePersistentStore:store error:&error];
-     [[NSFileManager defaultManager] removeItemAtURL:storeURL error:&error];
-     if(error)
-     NSLog(@"%@",[error description]);
-     if(error2)
-     NSLog(@"%@",[error2 description]);
-     }
-     */
+    [MagicalRecord cleanUp];
 }
 
 /*
@@ -248,7 +278,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
         return;
     }
     OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
-    OTRBuddy *buddy = [protocolManager buddyForUserName:userName accountName:accountName protocol:protocol];
+    OTRManagedBuddy *buddy = [protocolManager buddyForUserName:userName accountName:accountName protocol:protocol];
     [buddyListViewController enterConversationWithBuddy:buddy];
 }
 

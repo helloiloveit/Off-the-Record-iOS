@@ -34,8 +34,9 @@
 #import "XMPPCapabilitiesCoreDataStorage.h"
 #import "OTRCodec.h"
 #import "OTRProtocol.h"
-#import "OTRXMPPAccount.h"
-#import "OTRBuddy.h"
+#import "OTRManagedXMPPAccount.h"
+#import "OTRManagedBuddy.h"
+#import "OTRXMPPBudyTimers.h"
 
 @interface OTRXMPPManager : NSObject <XMPPRosterDelegate, NSFetchedResultsControllerDelegate, OTRProtocol>
 {
@@ -59,6 +60,8 @@
 	BOOL allowSSLHostNameMismatch;
 	
 	BOOL isXmppConnected;
+    
+    dispatch_queue_t backgroundQueue;
 	
     NSFetchedResultsController *fetchedResultsController;
 }
@@ -72,6 +75,7 @@
 @property (nonatomic, readonly) XMPPCapabilities *xmppCapabilities;
 @property (nonatomic, readonly) XMPPCapabilitiesCoreDataStorage *xmppCapabilitiesStorage;
 @property 	BOOL isXmppConnected;
+@property (nonatomic, strong)NSMutableDictionary * buddyTimers;
 
 - (NSManagedObjectContext *)managedObjectContext_roster;
 - (NSManagedObjectContext *)managedObjectContext_capabilities;
@@ -83,7 +87,17 @@
 
 - (NSString*)accountName;
 
-@property (nonatomic, retain) OTRXMPPAccount *account;
+
+//Chat State
+-(void)sendChatState:(OTRChatState)chatState withBuddyID:(NSManagedObjectID *)managedBuddyObjectID;
+-(void)restartPausedChatStateTimerForBuddyObjectID:(NSManagedObjectID *)managedBuddyObjectID;
+-(void)restartInactiveChatStateTimerForBuddyObjectID:(NSManagedObjectID *)managedBuddyObjectID;
+-(void)sendPausedChatState:(NSTimer *)timer;
+-(void)sendInactiveChatState:(NSTimer *)timer;
+-(NSTimer *)inactiveChatStateTimerForBuddyObjectID:(NSManagedObjectID *)managedBuddyObjectID;
+-(NSTimer *)pausedChatStateTimerForBuddyObjectID:(NSManagedObjectID *)managedBuddyObjectID;
+
+@property (nonatomic, retain) OTRManagedXMPPAccount *account;
 
 
 
