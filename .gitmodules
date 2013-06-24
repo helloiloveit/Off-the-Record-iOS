@@ -1,4 +1,3 @@
-
 [submodule "Submodules/Appirater"]
 	path = Submodules/Appirater
 	url = git://github.com/arashpayan/appirater.git
