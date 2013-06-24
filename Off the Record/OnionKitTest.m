@@ -21,8 +21,6 @@
         oKit.delegate = self;
         [oKit start];
         
-        
-        
     }
     return self;
 }

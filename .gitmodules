@@ -43,3 +43,6 @@
 [submodule "Submodules/iOS-Screenshot-Automater"]
 	path = Submodules/iOS-Screenshot-Automater
 	url = git@github.com:ChatSecure/iOS-Screenshot-Automator.git
+[submodule "Submodules/OnionKit"]
+	path = Submodules/OnionKit
+	url = git@github.com:ChatSecure/OnionKit.git
