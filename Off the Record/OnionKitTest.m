@@ -37,7 +37,7 @@
     NSLog(@"[OnionKitTest] torMessage %@",message);
 }
 
-- (void)controlPortDidAuthenticate:(BOOL)didAuthenticate
+- (void)torcontrolPortDidAuthenticate:(BOOL)didAuthenticate
 {
     NSLog(@"[OnionKitTest] controlPortDidAuthenticate");
 }
@@ -89,7 +89,7 @@
     
     //NSData *responseTerminatorData = [@"\r\n\r\n" dataUsingEncoding:NSASCIIStringEncoding];
 	//[sock readDataToData:responseTerminatorData withTimeout:-1.0 tag:0];
-    [sock readDataToLength:1250 withTimeout:-1.0 tag:0];
+    [sock readDataToLength:1500 withTimeout:-1.0 tag:0];
 }
 
 
