@@ -29,6 +29,7 @@
 {
     [super viewDidLoad];
 	OTRNewAccountTableView * tableView = [[OTRNewAccountTableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    tableView.scrollEnabled = NO;
     tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     tableView.accountSelectCallback = ^(OTRManagedAccount * newAccount)
     {
