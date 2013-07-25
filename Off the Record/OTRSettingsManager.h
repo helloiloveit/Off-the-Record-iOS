@@ -24,9 +24,7 @@
 #import "OTRSetting.h"
 #import "OTRConstants.h"
 
-#ifdef CRITTERCISM_ENABLED
-#define kOTRSettingKeyCrittercismOptIn @"kOTRSettingKeyCrittercismOptIn"
-#endif
+
 
 @interface OTRSettingsManager : NSObject
 

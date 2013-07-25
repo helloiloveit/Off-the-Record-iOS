@@ -46,6 +46,8 @@
 #define kOTRXMPPAllowPlaintextAuthenticationKey @"kOTRXMPPAllowPlaintextAuthenticationKey"
 #define kOTRXMPPRequireTLSKey @"kOTRXMPPRequireTLSKey"
 
+#define kOTRSettingKeyCrittercismOptIn @"kOTRSettingKeyCrittercismOptIn"
+
 #define kOTRXMPPResource @"chatsecure"
 
 #define kOTRFacebookUsernameLink @"http://www.facebook.com/help/?faq=211813265517027#What-are-usernames?"

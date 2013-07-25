@@ -8,6 +8,8 @@
 
 #import "OTROnboardingViewController.h"
 
+#import "OTRDescriptionOnboardingView.h"
+
 @interface OTROnboardingViewController ()
 
 @end
@@ -26,7 +28,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+	self.view = [[OTRDescriptionOnboardingView alloc] initWithFrame:self.view.bounds];
 }
 
 - (void)didReceiveMemoryWarning

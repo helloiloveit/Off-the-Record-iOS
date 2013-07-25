@@ -33,6 +33,7 @@
 #import "OTRLanguageManager.h"
 #import "OTRConvertAccount.h"
 #import "OTRUtilities.h"
+#import "OTROnboardingViewController.h"
 
 // Log levels: off, error, warn, info, verbose
 #if DEBUG
@@ -106,6 +107,8 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     OTRChatViewController *chatViewController = [[OTRChatViewController alloc] init];
     buddyListViewController.chatViewController = chatViewController;
     self.settingsViewController = [[OTRSettingsViewController alloc] init];
+    
+    
 
     UINavigationController *buddyListNavController = [[UINavigationController alloc] initWithRootViewController:buddyListViewController];
     UIViewController *rootViewController = nil;
@@ -118,6 +121,12 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
         splitViewController.delegate = chatViewController;
         rootViewController = splitViewController;
         splitViewController.title = CHAT_STRING;
+    }
+    
+    BOOL isFirstLaunch = YES; //FIXME save and retrieve nsdefault
+    if (isFirstLaunch) {
+        UIViewController * viewController = [[OTROnboardingViewController alloc] init];
+        rootViewController = viewController;
     }
 
     self.window.rootViewController = rootViewController;
