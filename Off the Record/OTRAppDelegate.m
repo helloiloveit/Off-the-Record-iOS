@@ -123,18 +123,33 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
         splitViewController.title = CHAT_STRING;
     }
     
-    BOOL isFirstLaunch = YES; //FIXME save and retrieve nsdefault
-    if (isFirstLaunch) {
-        UIViewController * viewController = [[OTROnboardingViewController alloc] init];
-        rootViewController = viewController;
-    }
+    
 
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
     
+    BOOL isFirstLaunch = ![[NSUserDefaults standardUserDefaults] boolForKey:@"hasLaunchedBefore"];
+    isFirstLaunch = YES;
+  
+    if (isFirstLaunch) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"hasLaunchedBefore"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        UIViewController * viewController = [[OTROnboardingViewController alloc] init];
+        UINavigationController * navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [navController setNavigationBarHidden:YES];
+        [buddyListNavController presentModalViewController:navController animated:NO];
+        //rootViewController = navController;
+    }
+    
+    
+    
     application.applicationIconBadgeNumber = 0;
   
     [Appirater appLaunched:YES];
+    
+    
     
     
     

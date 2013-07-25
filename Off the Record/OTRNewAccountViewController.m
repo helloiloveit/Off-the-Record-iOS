@@ -22,16 +22,8 @@
 
 #import "OTRNewAccountViewController.h"
 #import "Strings.h"
-#import "OTRProtocol.h"
-#import "OTRConstants.h"
 #import "OTRLoginViewController.h"
-#import "QuartzCore/QuartzCore.h"
-#import "OTRManagedXMPPAccount.h"
-#import "OTRManagedOscarAccount.h"
-
-#define rowHeight 70
-#define kDisplayNameKey @"displayNameKey"
-#define kProviderImageKey @"providerImageKey"
+#import "OTRNewAccountTableView.h"
 
 @interface OTRNewAccountViewController ()
 
@@ -44,91 +36,17 @@
     [super viewDidLoad];
 	
     self.title = NEW_ACCOUNT_STRING;
-    UITableView * tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
-    tableView.dataSource = self;
-    tableView.delegate = self;
-    tableView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleHeight;
+    OTRNewAccountTableView * tableView = [[OTRNewAccountTableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    tableView.accountSelectCallback = ^(OTRManagedAccount * newAccount){
+        OTRLoginViewController *loginViewController = [OTRLoginViewController loginViewControllerWithAcccountID:newAccount.objectID];
+        loginViewController.isNewAccount = YES;
+        [self.navigationController pushViewController:loginViewController animated:YES];
+    };
+    
+    tableView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:tableView];
     
-    //Facebook
-    NSMutableDictionary * facebookAccount = [NSMutableDictionary dictionary];
-    [facebookAccount setObject:FACEBOOK_STRING forKey:kDisplayNameKey];
-    [facebookAccount setObject:kFacebookImageName forKey:kProviderImageKey];
-    
-    //Google Chat
-     NSMutableDictionary * googleAccount = [NSMutableDictionary dictionary];
-    [googleAccount setObject:GOOGLE_TALK_STRING forKey:kDisplayNameKey];
-    [googleAccount setObject:kGTalkImageName forKey:kProviderImageKey];
-    
-    //Jabber
-     NSMutableDictionary * jabberAccount = [NSMutableDictionary dictionary];
-    [jabberAccount setObject:JABBER_STRING forKey:kDisplayNameKey];
-    [jabberAccount setObject:kXMPPImageName forKey:kProviderImageKey];
-    
-    //Aim
-     NSMutableDictionary * aimAccount = [NSMutableDictionary dictionary];
-    [aimAccount setObject:AIM_STRING forKey:kDisplayNameKey];
-    [aimAccount setObject:kAIMImageName forKey:kProviderImageKey];
-    
-    accounts = [NSMutableArray arrayWithObjects:facebookAccount,googleAccount,jabberAccount,aimAccount, nil];    
-    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:CANCEL_STRING style:UIBarButtonItemStyleBordered target:self action:@selector(cancelPressed:)];
-    
-}
-
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [accounts count];
-    
-}
-
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return rowHeight;
-}
-
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
-    NSDictionary * cellAccount = [accounts objectAtIndex:indexPath.row];
-    cell.textLabel.text = [cellAccount objectForKey:kDisplayNameKey];
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:19];
-    cell.imageView.image = [UIImage imageNamed:[cellAccount objectForKey:kProviderImageKey]];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
-    if( [[cellAccount objectForKey:kDisplayNameKey] isEqualToString:FACEBOOK_STRING])
-    {
-        cell.imageView.layer.masksToBounds = YES;
-        cell.imageView.layer.cornerRadius = 10.0;
-    }
-    
-    
-    
-    return cell;
-}
-
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    OTRManagedAccount * cellAccount = [self accountForName:[[accounts objectAtIndex:indexPath.row] objectForKey:kDisplayNameKey]];
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
-
-    [context MR_saveToPersistentStoreAndWait];
-    
-    OTRLoginViewController *loginViewController = [OTRLoginViewController loginViewControllerWithAcccountID:cellAccount.objectID];
-    loginViewController.isNewAccount = YES;
-    [self.navigationController pushViewController:loginViewController animated:YES];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];    
 }
 
 - (void)cancelPressed:(id)sender {
@@ -144,46 +62,6 @@
     } else {
         return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
     }
-}
-
--(OTRManagedAccount *)accountForName:(NSString *)name
-{
-    //Facebook
-    OTRManagedAccount * newAccount;
-    if([name isEqualToString:FACEBOOK_STRING])
-    {
-        OTRManagedXMPPAccount * facebookAccount = [OTRManagedXMPPAccount MR_createEntity];
-        [facebookAccount setDefaultsWithDomain:kOTRFacebookDomain];
-        newAccount = facebookAccount;
-    }
-    else if([name isEqualToString:GOOGLE_TALK_STRING])
-    {
-        //Google Chat
-        OTRManagedXMPPAccount * googleAccount = [OTRManagedXMPPAccount MR_createEntity];
-        [googleAccount setDefaultsWithDomain:kOTRGoogleTalkDomain];
-        newAccount = googleAccount;
-    }
-    else if([name isEqualToString:JABBER_STRING])
-    {
-        //Jabber
-        OTRManagedXMPPAccount * jabberAccount = [OTRManagedXMPPAccount MR_createEntity];
-        [jabberAccount setDefaultsWithDomain:@""];
-        newAccount = jabberAccount;
-    }
-    else if([name isEqualToString:AIM_STRING])
-    {
-        //Aim
-        OTRManagedOscarAccount * aimAccount = [OTRManagedOscarAccount MR_createEntity];
-        [aimAccount setDefaultsWithProtocol:kOTRProtocolTypeAIM];
-        newAccount = aimAccount;
-    }
-    return newAccount;
-    
-    
-    
-    
-    
-        
 }
 
 @end

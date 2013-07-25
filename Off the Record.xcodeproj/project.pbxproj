@@ -170,6 +170,8 @@
 		636FE4B9161B7701002B28EF /* OTRXMPPLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 636FE4B8161B7701002B28EF /* OTRXMPPLoginViewController.m */; };
 		636FE4BC161B771E002B28EF /* OTROscarLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 636FE4BB161B771E002B28EF /* OTROscarLoginViewController.m */; };
 		636FE4C0161B7C68002B28EF /* OTRInLineTextEditTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 636FE4BF161B7C68002B28EF /* OTRInLineTextEditTableViewCell.m */; };
+		6375641017A1D80B00CC6BCB /* OTRNewAccountTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6375640F17A1D80A00CC6BCB /* OTRNewAccountTableView.m */; };
+		6375641417A1DF8800CC6BCB /* OTROnboardingNewAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6375641317A1DF8800CC6BCB /* OTROnboardingNewAccountViewController.m */; };
 		63813C1216E14E5D00909670 /* OTRBuddyListGroupManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63813C1116E14E5D00909670 /* OTRBuddyListGroupManager.m */; };
 		639B9A71164F21D900C021A9 /* OTRShareSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 639B9A70164F21D900C021A9 /* OTRShareSetting.m */; };
 		639BE6B116DC3B2B004B7257 /* _OTRManagedMessageAndStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE6AE16DC3B2B004B7257 /* _OTRManagedMessageAndStatus.m */; };
@@ -837,6 +839,10 @@
 		636FE4BB161B771E002B28EF /* OTROscarLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTROscarLoginViewController.m; sourceTree = "<group>"; };
 		636FE4BE161B7C68002B28EF /* OTRInLineTextEditTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRInLineTextEditTableViewCell.h; sourceTree = "<group>"; };
 		636FE4BF161B7C68002B28EF /* OTRInLineTextEditTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRInLineTextEditTableViewCell.m; sourceTree = "<group>"; };
+		6375640E17A1D80A00CC6BCB /* OTRNewAccountTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRNewAccountTableView.h; sourceTree = "<group>"; };
+		6375640F17A1D80A00CC6BCB /* OTRNewAccountTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRNewAccountTableView.m; sourceTree = "<group>"; };
+		6375641217A1DF8800CC6BCB /* OTROnboardingNewAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTROnboardingNewAccountViewController.h; sourceTree = "<group>"; };
+		6375641317A1DF8800CC6BCB /* OTROnboardingNewAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTROnboardingNewAccountViewController.m; sourceTree = "<group>"; };
 		63813C1016E14E5D00909670 /* OTRBuddyListGroupManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRBuddyListGroupManager.h; sourceTree = "<group>"; };
 		63813C1116E14E5D00909670 /* OTRBuddyListGroupManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRBuddyListGroupManager.m; sourceTree = "<group>"; };
 		639B9A6F164F21D900C021A9 /* OTRShareSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRShareSetting.h; sourceTree = "<group>"; };
@@ -2430,6 +2436,8 @@
 				D9902050177627C800FFADE5 /* OTROnboardingView.m */,
 				631D8A9B17A09B7300D4FC3C /* OTRDescriptionOnboardingView.h */,
 				631D8A9C17A09B7300D4FC3C /* OTRDescriptionOnboardingView.m */,
+				6375641217A1DF8800CC6BCB /* OTROnboardingNewAccountViewController.h */,
+				6375641317A1DF8800CC6BCB /* OTROnboardingNewAccountViewController.m */,
 				D990204B1776262C00FFADE5 /* OTROnboardingViewController.h */,
 				D990204C1776262C00FFADE5 /* OTROnboardingViewController.m */,
 			);
@@ -2901,6 +2909,8 @@
 				636FE4BD161B7733002B28EF /* Login */,
 				6352DC8615AF9F16007AD0B4 /* OTRNewAccountViewController.h */,
 				6352DC8715AF9F16007AD0B4 /* OTRNewAccountViewController.m */,
+				6375640E17A1D80A00CC6BCB /* OTRNewAccountTableView.h */,
+				6375640F17A1D80A00CC6BCB /* OTRNewAccountTableView.m */,
 				D9BBCD3C1491F8B400AF1B9F /* OTRAboutViewController.h */,
 				D9BBCD3D1491F8B400AF1B9F /* OTRAboutViewController.m */,
 				6301D87B16E94778008F67A6 /* OTRChooseAccountViewController.h */,
@@ -3599,6 +3609,8 @@
 				D990205617762B8B00FFADE5 /* OWOnboardingContainerView.m in Sources */,
 				D990205917762CBF00FFADE5 /* OWOnboardingItem.m in Sources */,
 				631D8A9D17A09B7300D4FC3C /* OTRDescriptionOnboardingView.m in Sources */,
+				6375641017A1D80B00CC6BCB /* OTRNewAccountTableView.m in Sources */,
+				6375641417A1DF8800CC6BCB /* OTROnboardingNewAccountViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

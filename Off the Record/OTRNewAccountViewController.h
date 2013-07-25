@@ -22,11 +22,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Strings.h"
-#import "OTRManagedAccount.h"
 
-@interface OTRNewAccountViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
-{
-    NSMutableArray * accounts;
-}
+@interface OTRNewAccountViewController : UIViewController
 
 @end

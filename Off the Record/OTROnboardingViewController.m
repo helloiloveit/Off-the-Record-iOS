@@ -9,6 +9,7 @@
 #import "OTROnboardingViewController.h"
 
 #import "OTRDescriptionOnboardingView.h"
+#import "OTROnboardingNewAccountViewController.h"
 
 @interface OTROnboardingViewController ()
 
@@ -16,19 +17,28 @@
 
 @implementation OTROnboardingViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
+@synthesize scrollView;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	self.view = [[OTRDescriptionOnboardingView alloc] initWithFrame:self.view.bounds];
+    
+	
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    OTRDescriptionOnboardingView * descriptionView = [[OTRDescriptionOnboardingView alloc] initWithFrame:self.view.bounds];
+    descriptionView.actionButtonCallback = ^(OTROnboardingView *onboardingView){
+        OTROnboardingNewAccountViewController * viewController = [[OTROnboardingNewAccountViewController alloc] init];
+        
+        [self.navigationController pushViewController:viewController animated:YES];
+        
+    };
+    
+    
+    [self.view addSubview:descriptionView];
 }
 
 - (void)didReceiveMemoryWarning

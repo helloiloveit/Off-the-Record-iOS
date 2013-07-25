@@ -37,6 +37,7 @@
 @property (nonatomic, retain) OTRManagedBuddy *selectedBuddy;
 @property (nonatomic, strong) NSMutableArray * sectionInfoArray;
 
+
 @property (nonatomic, strong) NSFetchedResultsController * buddyFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController * searchBuddyFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController * recentBuddiesFetchedResultsController;

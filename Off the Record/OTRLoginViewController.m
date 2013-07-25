@@ -256,6 +256,8 @@
 {
     [super viewWillAppear:animated];
     
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
     if(!self.usernameTextField.text || [self.usernameTextField.text isEqualToString:@""])
     {
         [self.usernameTextField becomeFirstResponder];

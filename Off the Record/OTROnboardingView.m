@@ -24,8 +24,10 @@
         self.imageView = [[UIImageView alloc] initWithFrame:imageViewRect];
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.imageView setImage:imageBanner];
+        self.imageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         
         self.textLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, imageViewRect.origin.y+imageViewRect.size.height+10, frame.size.width-20, 120)];
+        self.textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
         
         int buttonWidth = 200;
         int buttonHeight = 80;
@@ -33,6 +35,7 @@
         self.actionButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         self.actionButton.frame = buttonRect;
         [self.actionButton addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        self.actionButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |UIViewAutoresizingFlexibleTopMargin;
         
         
         [self addSubview:self.imageView];

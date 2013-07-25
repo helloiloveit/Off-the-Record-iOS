@@ -10,6 +10,8 @@
 
 @interface OTROnboardingViewController : UIViewController
 
+@property (nonatomic,strong) UIScrollView * scrollView;
+
 
 
 @end
