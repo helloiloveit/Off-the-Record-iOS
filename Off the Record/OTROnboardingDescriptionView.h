@@ -1,5 +1,5 @@
 //
-//  OTRDescriptionOnboardingView.h
+//  OTROnboardingDescriptionView.h
 //  Off the Record
 //
 //  Created by David on 7/24/13.
@@ -9,7 +9,7 @@
 #import "OTROnboardingView.h"
 #import "OTRBoolSetting.h"
 
-@interface OTRDescriptionOnboardingView : OTROnboardingView
+@interface OTROnboardingDescriptionView : OTROnboardingView
 {
     OTRBoolSetting * crittercismSetting;
 }

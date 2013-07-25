@@ -8,7 +8,7 @@
 
 #import "OTROnboardingViewController.h"
 
-#import "OTRDescriptionOnboardingView.h"
+#import "OTROnboardingDescriptionView.h"
 #import "OTROnboardingNewAccountViewController.h"
 
 @interface OTROnboardingViewController ()
@@ -29,7 +29,7 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    OTRDescriptionOnboardingView * descriptionView = [[OTRDescriptionOnboardingView alloc] initWithFrame:self.view.bounds];
+    OTROnboardingDescriptionView * descriptionView = [[OTROnboardingDescriptionView alloc] initWithFrame:self.view.bounds];
     descriptionView.actionButtonCallback = ^(OTROnboardingView *onboardingView){
         OTROnboardingNewAccountViewController * viewController = [[OTROnboardingNewAccountViewController alloc] init];
         

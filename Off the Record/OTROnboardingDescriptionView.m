@@ -1,16 +1,16 @@
 //
-//  OTRDescriptionOnboardingView.m
+//  OTROnboardingDescriptionView.m
 //  Off the Record
 //
 //  Created by David on 7/24/13.
 //  Copyright (c) 2013 Chris Ballinger. All rights reserved.
 //
 
-#import "OTRDescriptionOnboardingView.h"
+#import "OTROnboardingDescriptionView.h"
 #import "Strings.h"
 #import "OTRConstants.h"
 
-@implementation OTRDescriptionOnboardingView
+@implementation OTROnboardingDescriptionView
 
 @synthesize sendCrashReportsSwitch,sendCrashReportsLabel;
 
