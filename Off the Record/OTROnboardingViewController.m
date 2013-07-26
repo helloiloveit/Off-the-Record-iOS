@@ -10,6 +10,7 @@
 
 #import "OTROnboardingDescriptionView.h"
 #import "OTROnboardingNewAccountViewController.h"
+#import "OTRManagedAccount.h"
 
 @interface OTROnboardingViewController ()
 
@@ -31,10 +32,14 @@
     [super viewWillAppear:animated];
     OTROnboardingDescriptionView * descriptionView = [[OTROnboardingDescriptionView alloc] initWithFrame:self.view.bounds];
     descriptionView.actionButtonCallback = ^(OTROnboardingView *onboardingView){
-        OTROnboardingNewAccountViewController * viewController = [[OTROnboardingNewAccountViewController alloc] init];
-        
-        [self.navigationController pushViewController:viewController animated:YES];
-        
+        if([[OTRManagedAccount MR_numberOfEntities] intValue])
+        {
+            [self.navigationController dismissModalViewControllerAnimated:YES];
+        }
+        else{
+            OTROnboardingNewAccountViewController * viewController = [[OTROnboardingNewAccountViewController alloc] init];
+            [self.navigationController pushViewController:viewController animated:YES];
+        }
     };
     
     

@@ -9,6 +9,7 @@
 #import "OTROnboardingDescriptionView.h"
 #import "Strings.h"
 #import "OTRConstants.h"
+#import "OTRManagedAccount.h"
 
 @implementation OTROnboardingDescriptionView
 
@@ -18,7 +19,13 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self.actionButton setTitle:@"Create Account" forState:UIControlStateNormal];
+        if ([[OTRManagedAccount MR_numberOfEntities] intValue]) {
+            [self.actionButton setTitle:@"Continue" forState:UIControlStateNormal];
+        }
+        else{
+            [self.actionButton setTitle:@"Create Account" forState:UIControlStateNormal];
+        }
+        
         self.textLabel.text = @"This is a cool nifty description";
         
         crittercismSetting = [[OTRBoolSetting alloc] initWithTitle:CRITTERCISM_TITLE_STRING description:CRITTERCISM_DESCRIPTION_STRING settingsKey:kOTRSettingKeyCrittercismOptIn];

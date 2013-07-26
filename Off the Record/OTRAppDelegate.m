@@ -129,7 +129,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     [self.window makeKeyAndVisible];
     
     BOOL isFirstLaunch = ![[NSUserDefaults standardUserDefaults] boolForKey:@"hasLaunchedBefore"];
-    isFirstLaunch = YES;
+    isFirstLaunch = YES; //FIXME remove just set yes for testing
   
     if (isFirstLaunch) {
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"hasLaunchedBefore"];
