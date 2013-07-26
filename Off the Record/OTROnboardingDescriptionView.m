@@ -20,13 +20,13 @@
     self = [super initWithFrame:frame];
     if (self) {
         if ([[OTRManagedAccount MR_numberOfEntities] intValue]) {
-            [self.actionButton setTitle:@"Continue" forState:UIControlStateNormal];
+            [self.actionButton setTitle:CONTINUE_STRING forState:UIControlStateNormal];
         }
         else{
             [self.actionButton setTitle:@"Create Account" forState:UIControlStateNormal];
         }
         
-        self.textLabel.text = @"This is a cool nifty description";
+        self.textLabel.text = DESCRIPTION_STRING;
         
         crittercismSetting = [[OTRBoolSetting alloc] initWithTitle:CRITTERCISM_TITLE_STRING description:CRITTERCISM_DESCRIPTION_STRING settingsKey:kOTRSettingKeyCrittercismOptIn];
         crittercismSetting.defaultValue = [NSNumber numberWithBool:YES];

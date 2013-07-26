@@ -160,6 +160,9 @@
 #define EN_BLOCK_AND_REMOVE_STRING @"Block & Remove"
 #define EN_ADD_BUDDY_STRING @"Add Buddy"
 #define EN_BUDDY_INFO_STRING @"Buddy Info"
+#define EN_CONTINUE_STRING @"Continue"
+#define EN_DESCRIPTION_STRING @"Chatsecure is an XMPP and AIM client that allows you to chat to your buddies using OTR or Off the Record."
+#define EN_CREATE_ACCOUNT_STRING @"Create Account"
 
 
 
@@ -296,6 +299,9 @@
 #define BLOCK_AND_REMOVE_STRING [OTRLanguageManager translatedString: EN_BLOCK_AND_REMOVE_STRING]
 #define ADD_BUDDY_STRING [OTRLanguageManager translatedString: EN_ADD_BUDDY_STRING]
 #define BUDDY_INFO_STRING [OTRLanguageManager translatedString: EN_BUDDY_INFO_STRING]
+#define DESCRIPTION_STRING [OTRLanguageManager translatedString: EN_DESCRIPTION_STRING]
+#define CONTINUE_STRING [OTRLanguageManager translatedString: EN_CONTINUE_STRING]
+#define CREATE_ACCOUNT_STRING [OTRLanguageManager translatedString: EN_CREATE_ACCOUNT_STRING]
 
 #define LOC_BUDDY_LIST_STRING NSLocalizedString(EN_BUDDY_LIST_STRING , @"Title for the buddy list tab")
 #define LOC_CONVERSATIONS_STRING NSLocalizedString(EN_CONVERSATIONS_STRING , @"Title for the conversations tab")
@@ -432,6 +438,9 @@
 #define LOC_BLOCK_AND_REMOVE_STRING NSLocalizedString(EN_BLOCK_AND_REMOVE_STRING,@"The String for a buddy to block and remove a buddy from the buddy list")
 #define LOC_ADD_BUDDY_STRING NSLocalizedString(EN_ADD_BUDDY_STRING,@"The title for the view to add a buddy")
 #define LOC_BUDDY_INFO_STRING NSLocalizedString(EN_BUDDY_INFO_STRING,@"The title for the view that shows detailed buddy info")
+#define LOC_CONTINUE_STRING NSLocalizedString(EN_CONTINUE_STRING,@"Title for button")
+#define LOC_DESCRIPTION_STRING NSLocalizedString(EN_DESCRIPTION_STRING,@"Short description shown on first launch of app")
+#define LOC_CREATE_ACCOUNT_STRING NSLocalizedString(EN_CREATE_ACCOUNT_STRING,@"title for button to then create an account on first launch")
 
 
 
