@@ -32,6 +32,8 @@
         crittercismSetting.defaultValue = [NSNumber numberWithBool:YES];
         
         CGFloat y = self.textLabel.frame.size.height +self.textLabel.frame.origin.y+10;
+        
+        
         CGRect crashReportsFrame = CGRectMake(self.textLabel.frame.origin.x, y, frame.size.width-20, 50);
         UIView * crashReportsview = [[UIView alloc] initWithFrame:crashReportsFrame];
         self.sendCrashReportsSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];

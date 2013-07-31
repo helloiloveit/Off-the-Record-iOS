@@ -44,3 +44,6 @@
 [submodule "Submodules/iOS-Screenshot-Automater"]
 	path = Submodules/iOS-Screenshot-Automater
 	url = git@github.com:ChatSecure/iOS-Screenshot-Automator.git
+[submodule "Submodules/BButon"]
+	path = Submodules/BButon
+	url = git@github.com:jessesquires/BButton.git

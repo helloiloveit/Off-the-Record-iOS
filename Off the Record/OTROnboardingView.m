@@ -7,6 +7,7 @@
 //
 
 #import "OTROnboardingView.h"
+#import "BButton.h"
 
 @implementation OTROnboardingView
 
@@ -28,12 +29,14 @@
         
         self.textLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, imageViewRect.origin.y+imageViewRect.size.height+10, frame.size.width-20, 120)];
         self.textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+        self.textLabel.numberOfLines = 0;
+        self.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         
         int buttonWidth = 200;
         int buttonHeight = 80;
         CGRect buttonRect = CGRectMake((frame.size.width - buttonWidth)/2, frame.size.height - buttonHeight -20, buttonWidth, buttonHeight);
-        self.actionButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        self.actionButton.frame = buttonRect;
+        self.actionButton = [[BButton alloc] initWithFrame:buttonRect type:BButtonTypePrimary];
+        //self.actionButton.frame = buttonRect;
         [self.actionButton addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         self.actionButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |UIViewAutoresizingFlexibleTopMargin;
         

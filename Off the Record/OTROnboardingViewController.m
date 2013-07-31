@@ -31,6 +31,12 @@
 {
     [super viewWillAppear:animated];
     OTROnboardingDescriptionView * descriptionView = [[OTROnboardingDescriptionView alloc] initWithFrame:self.view.bounds];
+    descriptionView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    UIScrollView * sview = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+    sview.contentSize = descriptionView.frame.size;
+    sview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [sview addSubview:descriptionView];
+    
     descriptionView.actionButtonCallback = ^(OTROnboardingView *onboardingView){
         if([[OTRManagedAccount MR_numberOfEntities] intValue])
         {
@@ -43,7 +49,7 @@
     };
     
     
-    [self.view addSubview:descriptionView];
+    [self.view addSubview:sview];
 }
 
 - (void)didReceiveMemoryWarning
@@ -51,5 +57,21 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+-(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
 
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return UIInterfaceOrientationMaskAll;
+    } else {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+}
 @end
