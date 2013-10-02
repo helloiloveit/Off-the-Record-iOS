@@ -36,6 +36,9 @@
 
 #define kFieldBuffer 20;
 
+#define kErrorAlertViewTag 131
+#define kErrorInfoAlertViewTag 132
+
 @interface OTRLoginViewController(Private)
 - (float) getMidpointOffsetforHUD;
 @end
@@ -75,7 +78,13 @@
         self.account = (OTRManagedAccount *)[context existingObjectWithID:newAccountID error:nil];
         
         //NSLog(@"Account Dictionary: %@",[account accountDictionary]);
-        self.textFieldTextColor = [UIColor colorWithRed:0.22 green:0.33 blue:0.53 alpha:1.0];
+        if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+            self.textFieldTextColor = [UIColor colorWithRed:0.22 green:0.33 blue:0.53 alpha:1.0];
+        }
+        else {
+            self.textFieldTextColor = [UIColor colorWithRed:0 green:0.47843137 blue:1 alpha:1];
+        }
+        
     }
     return self;
 }
@@ -297,7 +306,7 @@
     [account setNewUsername:[usernameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
     [account setRememberPasswordValue:rememberPasswordSwitch.on];
     
-    if (account.rememberPassword) {
+    if (account.rememberPasswordValue) {
         account.password = self.passwordTextField.text;
     } else {
         account.password = nil;
@@ -337,7 +346,23 @@
         [HUD hide:YES];
     if([account.protocol isEqualToString:kOTRProtocolTypeXMPP])
     {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_STRING message:XMPP_FAIL_STRING delegate:nil cancelButtonTitle:nil otherButtonTitles:OK_STRING, nil];
+        UIAlertView *alert = nil;
+        NSDictionary * userInfo = notification.userInfo;
+        id error = userInfo[KOTRProtocolLoginFailErrorKey];
+        if ([error isKindOfClass:[NSError class]]) {
+            recentError = (NSError *)error;
+            alert = [[UIAlertView alloc] initWithTitle:ERROR_STRING message:XMPP_FAIL_STRING delegate:self cancelButtonTitle:nil otherButtonTitles:OK_STRING,INFO_STRING, nil];
+        }
+        else if (error)
+        {
+            //could not authenicate
+            alert = [[UIAlertView alloc] initWithTitle:ERROR_STRING message:XMPP_FAIL_STRING delegate:nil cancelButtonTitle:nil otherButtonTitles:OK_STRING, nil];
+            
+        }
+        else {
+            alert = [[UIAlertView alloc] initWithTitle:ERROR_STRING message:XMPP_FAIL_STRING delegate:nil cancelButtonTitle:nil otherButtonTitles:OK_STRING, nil];
+        }
+        alert.tag = kErrorAlertViewTag;
         [alert show];
     }
 }
@@ -346,16 +371,7 @@
 {
     if(HUD)
         [HUD hide:YES];
-    [self dismissModalViewControllerAnimated:YES];
-    /* not sure why this was ever needed
-    if([account.protocol isEqualToString:kOTRProtocolTypeXMPP])
-    {
-        [[NSNotificationCenter defaultCenter]
-         postNotificationName:@"XMPPLoginNotification"
-         object:self];
-        [timeoutTimer invalidate];
-    }
-     */
+    [self dismissViewControllerAnimated:YES completion:nil];
 }  
 
 
@@ -364,18 +380,11 @@
     BOOL fields = [self checkFields];
     if(fields)
     {
-        [self.view endEditing:YES];
-        HUD = [[MBProgressHUD alloc] initWithView:self.view];
-        [self.view addSubview:HUD];
-        HUD.delegate = self;
-        HUD.labelText = LOGGING_IN_STRING;
-        [HUD show:YES];
+        [self showLoginProgress];
         
         [self readInFields];
 
         self.account.password = passwordTextField.text;
-        
-
         
         id<OTRProtocol> protocol = [[OTRProtocolManager sharedInstance] protocolForAccount:self.account];
         [protocol connectWithPassword:self.passwordTextField.text];
@@ -383,9 +392,19 @@
     self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:45.0 target:self selector:@selector(timeout:) userInfo:nil repeats:NO];
     //[[[OTRProtocolManager sharedInstance] accountsManager] addAccount:account];
 }
+-(void)showLoginProgress
+{
+    [self.view endEditing:YES];
+    HUD = [[MBProgressHUD alloc] initWithView:self.view];
+    [self.view addSubview:HUD];
+    HUD.delegate = self;
+    HUD.labelText = LOGGING_IN_STRING;
+    [HUD show:YES];
+    self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:45.0 target:self selector:@selector(timeout:) userInfo:nil repeats:NO];
+}
 
 - (void)cancelPressed:(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
@@ -420,6 +439,24 @@
     }
 }
 
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == kErrorAlertViewTag) {
+        if(alertView.numberOfButtons > 1 && buttonIndex == 1) {
+            NSString * errorDescriptionString = [NSString stringWithFormat:@"%@ : %@",[recentError domain],[recentError localizedDescription]];
+            UIAlertView * alert = [[UIAlertView alloc] initWithTitle:INFO_STRING message:errorDescriptionString delegate:self cancelButtonTitle:nil otherButtonTitles:OK_STRING,@"Copy", nil];
+            alert.tag = kErrorInfoAlertViewTag;
+            [alert show];
+        }
+    }
+    else if (alertView.tag == kErrorInfoAlertViewTag) {
+        if (buttonIndex == 1) {
+            NSString * errorDescriptionString = [NSString stringWithFormat:@"Domain: %@\nCode: %d\nUserInfo: %@",[recentError domain],[recentError code],[recentError userInfo]];
+            UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
+            [pasteBoard setString:errorDescriptionString];
+        }
+    }
+}
+
 #pragma mark -
 #pragma mark MBProgressHUDDelegate methods
 
@@ -436,32 +473,22 @@
     }
     NSManagedObjectContext * context = [NSManagedObjectContext MR_contextForCurrentThread];
     OTRManagedAccount * account = (OTRManagedAccount *)[context existingObjectWithID:accountID error:nil];
-    if ([account isKindOfClass:[OTRManagedXMPPAccount class]]) {
-        OTRManagedXMPPAccount *xmppAccount = (OTRManagedXMPPAccount*)account;
-        if([xmppAccount.domain isEqualToString:kOTRFacebookDomain])
-        {
-            //FacebookLoginViewController
-            return [[OTRFacebookLoginViewController alloc] initWithAccountID:accountID];
-        }
-        else if ([xmppAccount.domain isEqualToString:kOTRGoogleTalkDomain])
-        {
-            //GoogleTalkLoginViewController
-            return [[OTRGoogleTalkLoginViewController alloc] initWithAccountID:accountID];
-        }
-        else
-        {
-            //XMPP account addvanced
+    switch (account.accountType) {
+        case OTRAccountTypeAIM:
+            return [[OTROscarLoginViewController alloc] initWithAccountID:accountID];
+            break;
+        case OTRAccountTypeJabber:
             return [[OTRJabberLoginViewController alloc] initWithAccountID:accountID];
-        }
+            break;
+        case OTRAccountTypeFacebook:
+            return [[OTRFacebookLoginViewController alloc] initWithAccountID:accountID];
+            break;
+        case OTRAccountTypeGoogleTalk:
+            return [[OTRGoogleTalkLoginViewController alloc] initWithAccountID:accountID];
+            break;
+        default:
+            break;
     }
-    else if ([account isKindOfClass:[OTRManagedOscarAccount class]])
-    {
-        //Aim Protocol
-        return [[OTROscarLoginViewController alloc] initWithAccountID:accountID];
-    } else if ([account isKindOfClass:[OTRPushAccount class]]) {
-        return [[OTRPushLoginViewController alloc] initWithAccountID:accountID];
-    }
-
 }
 
 @end

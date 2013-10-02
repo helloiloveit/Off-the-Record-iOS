@@ -23,6 +23,9 @@
 #import "OTRFacebookLoginViewController.h"
 #import "Strings.h"
 #import "OTRAppDelegate.h"
+#import "OTRConstants.h"
+#import "FacebookSDK.h"
+#import "OTRFacebookSessionCachingStrategy.h"
 
 @interface OTRFacebookLoginViewController ()
 
@@ -30,73 +33,67 @@
 
 @implementation OTRFacebookLoginViewController
 
-@synthesize facebookHelpLabel;
-@synthesize facebookInfoButton;
-
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
+-(void)viewDidLoad {
     [super viewDidLoad];
+    [FBSettings setDefaultAppID:FACEBOOK_APP_ID];
+    self.connectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.connectButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    self.connectButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    //Removes @chat.facebook.com so to display plain username
-    self.usernameTextField.text = [self.account.username stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"@%@",kOTRFacebookDomain] withString:[NSString string]];
+    UIEdgeInsets imageInsets = UIEdgeInsetsMake(4.0, 40.0, 4.0, 4.0);
     
-    facebookHelpLabel = [[UILabel alloc] init];
-    facebookHelpLabel.text = FACEBOOK_HELP_STRING;
-    facebookHelpLabel.textAlignment = UITextAlignmentLeft;
-    facebookHelpLabel.lineBreakMode = UILineBreakModeWordWrap;
-    facebookHelpLabel.numberOfLines = 0;
-    facebookHelpLabel.font = [UIFont systemFontOfSize:14];
-    CGSize maximumLabelSize = CGSizeMake(296,9999);
-    CGSize labelSize = [FACEBOOK_HELP_STRING sizeWithFont:facebookHelpLabel.font constrainedToSize:maximumLabelSize lineBreakMode:facebookHelpLabel.lineBreakMode];
+    UIImage *buttonImage = [[UIImage imageNamed:@"FBLoginViewButton"] resizableImageWithCapInsets:imageInsets];
+    [self.connectButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
     
-    facebookHelpLabel.frame = CGRectMake(5, 3, labelSize.width, labelSize.height);
-    facebookHelpLabel.backgroundColor = [UIColor clearColor];
-    //facebookHelpLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    UIImage * pressedButtonImage = [[UIImage imageNamed:@"FBLoginViewButtonPressed"] resizableImageWithCapInsets:imageInsets];
+    [self.connectButton setBackgroundImage:pressedButtonImage forState:UIControlStateHighlighted];
     
-    self.facebookInfoButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
-    [self.facebookInfoButton addTarget:self action:@selector(facebookInfoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.disconnectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.disconnectButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    self.disconnectButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [self.disconnectButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [self.disconnectButton setBackgroundImage:pressedButtonImage forState:UIControlStateHighlighted];
     
-    [self addCellinfoWithSection:0 row:1 labelText:facebookHelpLabel cellType:KCellTypeHelp userInputView:facebookInfoButton];
+    [self.disconnectButton setTitle:DISCONNECT_FACEBOOK_STRING forState:UIControlStateNormal];
+    [self.disconnectButton addTarget:self action:@selector(disconnectFacebook:) forControlEvents:UIControlEventTouchUpInside];
+
+    [self.connectButton setTitle:CONNECT_FACEBOOK_STRING forState:UIControlStateNormal];
+    [self.connectButton addTarget:self action:@selector(loginButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 }
 
--(void)facebookInfoButtonPressed:(id)sender
+-(void)connectAccount:(id)sender
 {
-    UIActionSheet * urlActionSheet = [[UIActionSheet alloc] initWithTitle:kOTRFacebookUsernameLink delegate:self cancelButtonTitle:CANCEL_STRING destructiveButtonTitle:nil otherButtonTitles:OPEN_IN_SAFARI_STRING, nil];
-    [OTR_APP_DELEGATE presentActionSheet:urlActionSheet inView:self.view];
+    //[FBSettings setDefaultAppID:FACEBOOK_APP_ID];
+    FBSession * session = [[FBSession alloc] initWithAppID:FACEBOOK_APP_ID permissions:@[@"xmpp_login"] urlSchemeSuffix:nil tokenCacheStrategy:[FBSessionTokenCachingStrategy nullCacheInstance]];
+    [FBSession setActiveSession:session];
+    [session openWithBehavior:FBSessionLoginBehaviorUseSystemAccountIfPresent completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+        if ([session isOpen]) {
+            
+            NSLog(@"Session: %@",session);
+            FBRequest * request = [[FBRequest alloc] initWithSession:session graphPath:@"me"];
+            [request startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
+                if (!error) {
+                    [self didConnectUser:user];
+                    NSManagedObjectContext * context = [NSManagedObjectContext MR_contextForCurrentThread];
+                    [context MR_saveOnlySelfAndWait];
+                    self.account.tokenDictionary = [session.accessTokenData dictionary];
+                    //self.account.password = session.accessTokenData.accessToken;
+                    [self.loginViewTableView reloadData];
+                    [self loginButtonPressed:sender];
+                }
+            }];
+        }
+    }];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
+-(void)didConnectUser:(id<FBGraphUser>)user
 {
-    if (buttonIndex == 0) {
-        
-        NSURL *url = [ [ NSURL alloc ] initWithString: kOTRFacebookUsernameLink ];
-        [[UIApplication sharedApplication] openURL:url];
-        
+    if ([user.username length]) {
+        self.account.username =  user.username;
     }
-}
-
--(void)readInFields
-{
-    [super readInFields];
-    NSString * usernameText = [self.usernameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    usernameText = [NSString stringWithFormat:@"%@@%@",usernameText,kOTRFacebookDomain];
-    [self.account setNewUsername:usernameText];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    else {
+        self.account.username =  user.name;
+    }
 }
 
 @end

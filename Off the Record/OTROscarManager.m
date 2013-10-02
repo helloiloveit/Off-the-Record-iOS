@@ -36,11 +36,12 @@
 
 BOOL loginFailed;
 
--(id)init
+-(id)initWithAccount:(OTRManagedAccount *)newAccount
 {
     self = [super init];
     if(self)
     {
+        self.account = newAccount;
         mainThread = [NSThread currentThread];
         loggedIn = NO;
     }
@@ -301,7 +302,7 @@ BOOL loginFailed;
     
     OTRManagedBuddy * messageBuddy = [OTRManagedBuddy fetchOrCreateWithName:message.buddy.username account:self.account];
     
-    OTRManagedMessage *otrMessage = [OTRManagedMessage newMessageFromBuddy:messageBuddy message:msgTxt encrypted:YES];
+    OTRManagedMessage *otrMessage = [OTRManagedMessage newMessageFromBuddy:messageBuddy message:msgTxt encrypted:YES delayedDate:nil];
     
     [OTRCodec decodeMessage:otrMessage];
     

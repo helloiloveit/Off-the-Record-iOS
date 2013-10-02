@@ -31,6 +31,7 @@
 #import "XMPPvCardCoreDataStorage.h"
 #import "XMPPMessage+XEP_0184.h"
 #import "XMPPMessage+XEP_0085.h"
+#import "NSXMLElement+XEP_0203.h"
 #import "Strings.h"
 #import "OTRXMPPManagedPresenceSubscriptionRequest.h"
 
@@ -43,6 +44,10 @@
 #import "OTRConstants.h"
 #import "OTRProtocolManager.h"
 #include <stdlib.h>
+#import "XMPPXFacebookPlatformAuthentication.h"
+#import "XMPPXOATH2Google.h"
+#import "OTRConstants.h"
+#import "OTRUtilities.h"
 
 // Log levels: off, error, warn, info, verbose
 #if DEBUG
@@ -58,7 +63,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 
 - (void)goOnline;
 - (void)goOffline;
-- (void)failedToConnect;
+- (void)failedToConnect:(id)error;
 
 @end
 
@@ -77,12 +82,13 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 @synthesize account;
 @synthesize buddyTimers;
 
--(id)init
-{
+- (id) initWithAccount:(OTRManagedAccount *)newAccount {
     self = [super init];
     
     if(self)
     {
+        self.account = (OTRManagedXMPPAccount*)newAccount;
+
         // Configure logging framework
         backgroundQueue = dispatch_queue_create("buddy.background", NULL);
         [DDLog addLogger:[DDTTYLogger sharedInstance]];
@@ -94,7 +100,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
         buddyTimers = [NSMutableDictionary dictionary];
         
     }
-
+    
     return self;
 }
 
@@ -328,7 +334,14 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 	// The XMPPStream is the base class for all activity.
 	// Everything else plugs into the xmppStream, such as modules/extensions and delegates.
     
-	xmppStream = [[XMPPStream alloc] init];
+	if (self.account.accountType == OTRAccountTypeFacebook) {
+        xmppStream = [[XMPPStream alloc] initWithFacebookAppId:FACEBOOK_APP_ID];
+    }
+    else{
+        xmppStream = [[XMPPStream alloc] init];
+    }
+    
+    
     
     //Makes sure not allow any sending of password in plain text
     
@@ -443,8 +456,8 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 	
     
 	// You may need to alter these settings depending on the server you're connecting to
-	allowSelfSignedCertificates = account.shouldAllowSSLHostNameMismatch;
-	allowSSLHostNameMismatch = account.shouldAllowSelfSignedSSL;
+	allowSelfSignedCertificates = account.shouldAllowSelfSignedSSL;
+	allowSSLHostNameMismatch = account.shouldAllowSSLHostNameMismatch;
 }
 
 - (void)teardownStream
@@ -499,10 +512,17 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 	[[self xmppStream] sendElement:presence];
 }
 
-- (void)failedToConnect
+- (void)failedToConnect:(id)error
 {
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:kOTRProtocolLoginFail object:self];    
+    if (error) {
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:kOTRProtocolLoginFail object:self userInfo:@{KOTRProtocolLoginFailErrorKey:error}];
+    }
+    else {
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:kOTRProtocolLoginFail object:self];
+    }
+    
 }
 
 ///////////////////////////////
@@ -531,9 +551,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 	if (![xmppStream isDisconnected]) {
 		return YES;
 	}
-    
-    xmppStream.requireTLS = self.account.shouldRequireTLS;
-    xmppStream.allowPlaintextAuthentication = self.account.shouldAllowPlainTextAuthentication;
+    xmppStream.autoStartTLS = YES;
     
 	//
 	// If you don't want to use the Settings view to set the JID, 
@@ -610,7 +628,9 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 - (void)xmppStream:(XMPPStream *)sender willSecureWithSettings:(NSMutableDictionary *)settings
 {
 	DDLogVerbose(@"%@: %@", THIS_FILE, THIS_METHOD);
-	
+    
+    [settings setObject:[OTRUtilities cipherSuites] forKey:GCDAsyncSocketSSLCipherSuites];
+
 	if (allowSelfSignedCertificates)
 	{
 		[settings setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCFStreamSSLAllowsAnyRoot];
@@ -632,7 +652,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 		NSString *serverDomain = xmppStream.hostName;
 		NSString *virtualDomain = [xmppStream.myJID domain];
 		
-		if ([serverDomain isEqualToString:@"talk.google.com"])
+		if ([serverDomain isEqualToString:kOTRGoogleTalkDomain])
 		{
 			if ([virtualDomain isEqualToString:@"gmail.com"])
 			{
@@ -670,20 +690,28 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 	
 	
 	NSError *error = nil;
-	
-	if (![[self xmppStream] authenticateWithPassword:password error:&error])
+    
+    if ([sender supportsXFacebookPlatformAuthentication]) {
+        
+        isXmppConnected = [sender authenticateWithFacebookAccessToken:password error:&error];
+        return;
+    }
+    else if ([sender supportsXOAUTH2GoogleAuthentication] && self.account.accountType == OTRAccountTypeGoogleTalk) {
+        isXmppConnected = [sender authenticateWithGoogleAccessToken:password error:&error];
+        return;
+    }
+	else if (![[self xmppStream] authenticateWithPassword:password error:&error])
 	{
-		DDLogError(@"Error authenticating: %@", error);
         isXmppConnected = NO;
         return;
 	}
+    
     isXmppConnected = YES;
 }
 
 - (void)xmppStreamDidAuthenticate:(XMPPStream *)sender
 {
 	DDLogVerbose(@"%@: %@", THIS_FILE, THIS_METHOD);
-	
 	[self goOnline];
 }
 
@@ -691,7 +719,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 {
     
 	DDLogVerbose(@"%@: %@", THIS_FILE, THIS_METHOD);
-    [self failedToConnect];
+    [self failedToConnect:error];
 }
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
@@ -709,6 +737,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     
     return [OTRManagedBuddy fetchOrCreateWithName:[user.jid full] account:self.account];
 }
+
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message
 {
@@ -748,22 +777,15 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
         [messageBuddy receiveReceiptResonse:[message receiptResponseID]];
     }
     
-	if ([message isChatMessageWithBody])
+	if ([message isMessageWithBody] && ![message isErrorMessage])
 	{
-        
-        
-        
-        /*XMPPUserCoreDataStorageObject *user = [xmppRosterStorage userForJID:[message from]
-                                                                 xmppStream:xmppStream
-                                                       managedObjectContext:[self managedObjectContext_roster]];
-         */
-        
         NSString *body = [[message elementForName:@"body"] stringValue];
-        //NSString *displayName = [user displayName];
         
         OTRManagedBuddy * messageBuddy = [self buddyWithMessage:message];
         
-        OTRManagedMessage *otrMessage = [OTRManagedMessage newMessageFromBuddy:messageBuddy message:body encrypted:YES];
+        NSDate * date = [message delayedDeliveryDate];
+        
+        OTRManagedMessage *otrMessage = [OTRManagedMessage newMessageFromBuddy:messageBuddy message:body encrypted:YES delayedDate:date];
         [OTRCodec decodeMessage:otrMessage];
         
         if(otrMessage && !otrMessage.isEncryptedValue)
@@ -772,8 +794,8 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
             
         }
 	}
+    
 }
-
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence
 {
 	DDLogVerbose(@"%@: %@ - %@\nType: %@\nShow: %@\nStatus: %@", THIS_FILE, THIS_METHOD, [presence from], [presence type], [presence show],[presence status]);
@@ -798,7 +820,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 	if (!isXmppConnected)
 	{
 		DDLogError(@"Unable to connect to server. Check xmppStream.hostName");
-        [self failedToConnect];
+        [self failedToConnect:error];
 	}
     else {
         //Lost connection
@@ -883,7 +905,6 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 
 -(void)connectWithPassword:(NSString *)myPassword
 {
-    
     [self connectWithJID:self.account.username password:myPassword];
 }
 

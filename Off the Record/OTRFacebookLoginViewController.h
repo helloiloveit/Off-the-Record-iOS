@@ -20,12 +20,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with ChatSecure.  If not, see <http://www.gnu.org/licenses/>.
 
-#import "OTRXMPPLoginViewController.h"
+#import "OTRXMPPOAUTHLoginViewController.h"
+#import "OTRManagedFacebookAccount.h"
 
-@interface OTRFacebookLoginViewController : OTRXMPPLoginViewController
+@interface OTRFacebookLoginViewController : OTRXMPPOAUTHLoginViewController
+
+@property (nonatomic,strong)  OTRManagedFacebookAccount * account;
 
 
-@property (nonatomic,strong) UILabel * facebookHelpLabel;
-@property (nonatomic,strong) UIButton * facebookInfoButton;
 
 @end

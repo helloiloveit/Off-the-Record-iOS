@@ -37,7 +37,7 @@
     NSString *myAccountName = theMessage.buddy.account.username;
     
     NSString *decodedMessageString = [[OTRKit sharedInstance] decodeMessage:message recipient:friendAccount accountName:myAccountName protocol:protocol];
-    if(decodedMessageString) {
+    if([decodedMessageString length]) {
         theMessage.message = [OTRUtilities stripHTML:decodedMessageString];
         [theMessage setIsEncryptedValue:NO];
     } else {
@@ -51,6 +51,33 @@
 
     OTRKitMessageState messageState = [[OTRKit sharedInstance] messageStateForUsername:friendAccount accountName:myAccountName protocol:protocol];
     [theMessage.buddy setNewEncryptionStatus:messageState];
+}
+
+
+
++(void)encodeMessage:(OTRManagedMessage *)theMessage startGeneratingKeysBlock:(void (^)(void))generatingKeysBlock  completion:(void (^)(OTRManagedMessage *))completionBlock
+{
+    NSString *message = theMessage.message;
+    NSString *recipientAccount = theMessage.buddy.accountName;
+    NSString *protocol = theMessage.buddy.account.protocol;
+    NSString *sendingAccount = theMessage.buddy.account.username;
+    //theMessage.isEncryptedValue = NO;
+    
+    //NSString *encodedMessageString = [[OTRKit sharedInstance] encodeMessage:message recipient:recipientAccount accountName:sendingAccount protocol:protocol];
+    [[OTRKit sharedInstance] encodeMessage:message recipient:recipientAccount accountName:sendingAccount protocol:protocol startGeneratingKeysBlock:generatingKeysBlock success:^(NSString *message) {
+        OTRManagedMessage *newOTRMessage = [OTRManagedMessage newMessageToBuddy:theMessage.buddy message:message encrypted:YES];
+        newOTRMessage.date = theMessage.date;
+        newOTRMessage.uniqueID = theMessage.uniqueID;
+        
+        NSManagedObjectContext * context = [NSManagedObjectContext MR_contextForCurrentThread];
+        [context MR_saveToPersistentStoreAndWait];
+        
+        //return newOTRMessage;
+        if (completionBlock) {
+            completionBlock(newOTRMessage);
+        }
+        
+    }];
 }
 
 
@@ -72,6 +99,18 @@
     [context MR_saveToPersistentStoreAndWait];
     
     return newOTRMessage;
+}
+
++ (void)isGeneratingKeyForBuddy:(OTRManagedBuddy *)buddy completion:(void (^)(BOOL isGeneratingKey))completion;
+{
+    if(buddy)
+    {
+        [[OTRKit sharedInstance] checkIfGeneratingKeyForAccountName:buddy.account.username protocol:buddy.account.protocol completion:completion];
+    }
+    else if (completion){
+        completion(NO);
+    }
+    
 }
 
 

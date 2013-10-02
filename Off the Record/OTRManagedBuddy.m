@@ -37,6 +37,7 @@
 
 @implementation OTRManagedBuddy
 
+
 -(void)sendMessage:(NSString *)message secure:(BOOL)secure
 {
     if (message) {
@@ -50,17 +51,23 @@
         if(secure)
         {
             encodedMessage = [OTRCodec encodeMessage:newMessage];
+            [OTRCodec encodeMessage:newMessage startGeneratingKeysBlock:nil completion:^(OTRManagedMessage *message) {
+                [OTRManagedMessage sendMessage:message];
+                self.lastSentChatStateValue=kOTRChatStateActive;
+            }];
         }
         else
         {
             encodedMessage = newMessage;
+            [OTRManagedMessage sendMessage:encodedMessage];
         }
         //NSLog(@"encoded message: %@",encodedMessage.message);
-        [OTRManagedMessage sendMessage:encodedMessage];
+        
 
-        self.lastSentChatStateValue=kOTRChatStateActive;
+        
     }
 }
+ 
 
 -(BOOL)protocolIsXMPP
 {
@@ -231,7 +238,7 @@
     if ([sortedStatuses count]) {
         return sortedStatuses[0];
     }
-    return [OTRManagedStatus newStatus:kOTRBuddyStatusOffline withMessage:nil withBuddy:self incoming:NO];
+    return [OTRManagedStatus newStatus:kOTRBuddyStatusOffline withMessage:nil withBuddy:self incoming:YES];
 
     
 }
@@ -296,7 +303,7 @@
 +(OTRManagedBuddy *)fetchOrCreateWithName:(NSString *)name account:(OTRManagedAccount *)account
 {
     OTRManagedBuddy * buddy = nil;
-    buddy = [OTRManagedBuddy buddyWithAccountName:name account:account];
+    buddy = [OTRManagedBuddy fetchWithName:name account:account];
     if (!buddy) {
         buddy = [OTRManagedBuddy MR_createEntity];
         buddy.accountName = name;
@@ -304,7 +311,7 @@
     }
     return buddy;
 }
-+(OTRManagedBuddy *)buddyWithAccountName:(NSString *)name account:(OTRManagedAccount *)account
++(OTRManagedBuddy *)fetchWithName:(NSString *)name account:(OTRManagedAccount *)account;
 {
     NSPredicate * buddyFilter = [NSPredicate predicateWithFormat:@"accountName == %@",name];
     NSSet * filteredArray = [account.buddies filteredSetUsingPredicate:buddyFilter];

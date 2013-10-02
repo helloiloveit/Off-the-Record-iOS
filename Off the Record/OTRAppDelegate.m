@@ -35,6 +35,9 @@
 #import "OTRLanguageManager.h"
 #import "OTRConvertAccount.h"
 #import "OTRUtilities.h"
+#import "OTRAccountsManager.h"
+#import "FacebookSDK.h"
+#import "OTRAppVersionManager.h"
 
 // Log levels: off, error, warn, info, verbose
 #if DEBUG
@@ -60,6 +63,8 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+    
     // DATABASE TESTS
     NSString * storeFileName = @"db.sqlite";
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:storeFileName];
@@ -72,6 +77,8 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     {
         NSLog(@"error encrypting store");
     }
+    
+    
     
     //NSPersistentStoreCoordinator *storeCoordinator = [OTRDatabaseUtils persistentStoreCoordinatorWithDBName:@"db.sqlite" passphrase:@"test"];
     
@@ -101,6 +108,8 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     [OTRUtilities deleteAllBuddiesAndMessages];
     
     [OTRManagedAccount resetAccountsConnectionStatus];
+    
+    [OTRAppVersionManager applyAppUpdatesForCurrentAppVersion];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
@@ -256,7 +265,6 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     
     [MagicalRecord cleanUp];
 }
-
 /*
 // Optional UITabBarControllerDelegate method.
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
@@ -316,6 +324,15 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
 
 - (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
     NSLog(@"Error in registration. Error: %@%@", [err localizedDescription], [err userInfo]);
+}
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    return [[FBSession activeSession] handleOpenURL:url];
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    return [[FBSession activeSession] handleOpenURL:url];
 }
 
 @end

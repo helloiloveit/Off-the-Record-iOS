@@ -169,7 +169,7 @@
 
 -(void)cancelButtonPressed:(id)sender
 {
-    [self.navigationController dismissModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 -(void)doneButtonPressed:(id)sender
 {
@@ -190,7 +190,7 @@
         id<OTRProtocol> protocol = [[OTRProtocolManager sharedInstance] protocolForAccount:self.account];
         [protocol addBuddy:newBuddy];
         
-        [self.navigationController dismissModalViewControllerAnimated:YES];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
     else
     {

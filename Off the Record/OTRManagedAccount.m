@@ -30,9 +30,9 @@
 #import "Strings.h"
 #import "OTRProtocolManager.h"
 #import "OTRUtilities.h"
-#import "OTRPushAccount.h"
+#import "OTRConstants.h"
 
-#define kOTRServiceName @"org.chatsecure.ChatSecure"
+
 
 @interface OTRManagedAccount()
 @end
@@ -108,7 +108,7 @@
 
 - (void) setRememberPasswordValue:(BOOL)remember {
     [super setRememberPasswordValue: remember];
-    if (!self.rememberPassword) {
+    if (!self.rememberPasswordValue) {
         self.password = nil;
     }
 }
@@ -170,6 +170,11 @@
     
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     [context MR_saveToPersistentStoreAndWait];
+}
+
+-(OTRAccountType)accountType
+{
+    return OTRAccountTypeNone;
 }
 
 +(void)resetAccountsConnectionStatus
