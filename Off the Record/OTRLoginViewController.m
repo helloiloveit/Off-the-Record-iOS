@@ -486,9 +486,13 @@
         case OTRAccountTypeGoogleTalk:
             return [[OTRGoogleTalkLoginViewController alloc] initWithAccountID:accountID];
             break;
+        case OTRAccountTypePush:
+            return [[OTRPushLoginViewController alloc] initWithAccountID:accountID];
+            break;
         default:
             break;
     }
+    return nil;
 }
 
 @end

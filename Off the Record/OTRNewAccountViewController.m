@@ -80,8 +80,9 @@
     aimAccount[kAccountTypeKey] = @(OTRAccountTypeAIM);
     
     NSMutableDictionary *pushAccount = [NSMutableDictionary dictionary];
-    [pushAccount setObject:CHATSECURE_PUSH_STRING forKey:kDisplayNameKey];
-    [pushAccount setObject:@"ipad.png" forKey:kProviderImageKey];
+    pushAccount[kDisplayNameKey] = CHATSECURE_PUSH_STRING;
+    pushAccount[kProviderImageKey] = @"ipad.png";
+    pushAccount[kAccountTypeKey] = @(OTRAccountTypePush);
 
     accounts = @[facebookAccount,googleAccount,jabberAccount,aimAccount,pushAccount];
     
@@ -191,7 +192,8 @@
         OTRManagedOscarAccount * aimAccount = [OTRManagedOscarAccount MR_createEntity];
         [aimAccount setDefaultsWithProtocol:kOTRProtocolTypeAIM];
         newAccount = aimAccount;
-    } else if ([name isEqualToString:CHATSECURE_PUSH_STRING]) {
+    }
+    else if (accountType == OTRAccountTypePush) {
         OTRPushAccount *pushAccount = [OTRPushAccount MR_createEntity];
         [pushAccount setDefaultsWithProtocol:kOTRProtocolTypePush];
         newAccount = pushAccount;

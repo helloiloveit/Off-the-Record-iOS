@@ -1,8 +1,13 @@
 #import "OTRManagedGoogleAccount.h"
 #import "GTMOAuth2Authentication.h"
 #import "Strings.h"
-#import "OTRSecrets.h"
 #import "GTMOAuth2SignIn.h"
+
+#ifdef CRITTERCISM_ENABLED
+#import "OTRSecrets.h"
+#else
+#define GOOGLE_APP_SECRET @"YOUR GOOGLE APP SECRET"
+#endif
 
 #define kExpirationDateKey @"kExpirationDateKey"
 #define kExpiresInKey @"expires_in"

@@ -21,8 +21,13 @@
     return CHATSECURE_PUSH_STRING;
 }
 
-- (Class) protocolClass {
+- (Class)protocolClass {
     return [OTRPushManager class];
+}
+
+-(OTRAccountType)accountType
+{
+    return OTRAccountTypePush;
 }
 
 @end

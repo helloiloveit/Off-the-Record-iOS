@@ -65,6 +65,7 @@
         <attribute name="sendTypingNotifications" optional="YES" attributeType="Boolean" syncable="YES"/>
         <relationship name="subscriptionRequests" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="OTRXMPPManagedPresenceSubscriptionRequest" inverseName="xmppAccount" inverseEntity="OTRXMPPManagedPresenceSubscriptionRequest" syncable="YES"/>
     </entity>
+    <entity name="OTRPushAccount" representedClassName="OTRPushAccount" parentEntity="OTRManagedAccount" syncable="YES"/>
     <entity name="OTRXMPPManagedPresenceSubscriptionRequest" representedClassName="OTRXMPPManagedPresenceSubscriptionRequest" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="displayName" optional="YES" attributeType="String" syncable="YES"/>
@@ -81,9 +82,10 @@
         <element name="OTRManagedMessage" positionX="-108" positionY="266" width="128" height="103"/>
         <element name="OTRManagedMessageAndStatus" positionX="-153" positionY="9" width="189" height="118"/>
         <element name="OTRManagedOAuthAccount" positionX="666" positionY="353" width="128" height="43"/>
-        <element name="OTRManagedOscarAccount" positionX="520" positionY="137" width="128" height="43"/>
+        <element name="OTRManagedOscarAccount" positionX="522" positionY="137" width="128" height="43"/>
         <element name="OTRManagedStatus" positionX="-290" positionY="161" width="128" height="73"/>
         <element name="OTRManagedXMPPAccount" positionX="520" positionY="198" width="128" height="178"/>
         <element name="OTRXMPPManagedPresenceSubscriptionRequest" positionX="324" positionY="320" width="153" height="103"/>
+        <element name="OTRPushAccount" positionX="522" positionY="56" width="128" height="43"/>
     </elements>
 </model>

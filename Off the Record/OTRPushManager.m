@@ -16,6 +16,14 @@
 @implementation OTRPushManager
 @synthesize account, isConnected;
 
+-(id)initWithAccount:(OTRManagedAccount *)account
+{
+    if (self = [self init]) {
+        
+    }
+    return self;
+}
+
 - (void) sendMessage:(OTRManagedMessage*)message {
     
 }

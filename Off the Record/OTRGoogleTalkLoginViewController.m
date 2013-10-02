@@ -23,14 +23,12 @@
 #import "OTRGoogleTalkLoginViewController.h"
 #import "Strings.h"
 #import "GTMOAuth2ViewControllerTouch.h"
-#import "OTRSecrets.h"
-/*
+
 #ifdef CRITTERCISM_ENABLED
 #import "OTRSecrets.h"
 #else
 #define GOOGLE_APP_SECRET @"YOUR GOOGLE APP SECRET"
 #endif
- */
 
 @interface OTRGoogleTalkLoginViewController ()
 

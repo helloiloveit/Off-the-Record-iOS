@@ -31,6 +31,7 @@
 #import "OTRProtocolManager.h"
 #import "OTRUtilities.h"
 #import "OTRConstants.h"
+#import "OTRPushAccount.h"
 
 
 
