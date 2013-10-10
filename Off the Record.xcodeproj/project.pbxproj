@@ -47,6 +47,7 @@
 		633B6D0D17ED289F002DA152 /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 633B6D0B17ED289F002DA152 /* HPTextViewInternal.m */; };
 		633E71F916E169C100495B45 /* OTRBuddyListSectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 633E71F816E169C100495B45 /* OTRBuddyListSectionInfo.m */; };
 		633E71FD16E170AA00495B45 /* OTRSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633E71FC16E170AA00495B45 /* OTRSectionHeaderView.m */; };
+		6347423218034847007DDD41 /* AFOAuth2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = 6347423118034847007DDD41 /* AFOAuth2Client.m */; };
 		6348184917E3D600004E0146 /* XMPPXOATH2Google.m in Sources */ = {isa = PBXBuildFile; fileRef = 6348184817E3D600004E0146 /* XMPPXOATH2Google.m */; };
 		6348184C17E3D6B9004E0146 /* OTRXMPPOAUTHLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6348184B17E3D6B8004E0146 /* OTRXMPPOAUTHLoginViewController.m */; };
 		63483F801752CED100779257 /* XMPPAnonymousAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 63483DF81752CED100779257 /* XMPPAnonymousAuthentication.m */; };
@@ -617,7 +618,7 @@
 		6301D88116E95A36008F67A6 /* OpenInChromeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OpenInChromeController.m; path = Submodules/googleChromeOpenInChrome/OpenInChromeController.m; sourceTree = "<group>"; };
 		63022BB416CDAD4C00F764F1 /* OTRChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRChatViewController.h; sourceTree = "<group>"; };
 		63022BB516CDAD4C00F764F1 /* OTRChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRChatViewController.m; sourceTree = "<group>"; };
-		6305BEFA17FCC47F0075A3AE /* ChatSecure 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ChatSecure 3.xcdatamodel"; sourceTree = "<group>"; };
+		6305BEFA17FCC47F0075A3AE /* ChatSecure 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "ChatSecure 3.xcdatamodel"; sourceTree = "<group>"; };
 		630FF21116E0267200CC20AD /* _OTRManagedGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _OTRManagedGroup.h; sourceTree = "<group>"; };
 		630FF21216E0267200CC20AD /* _OTRManagedGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _OTRManagedGroup.m; sourceTree = "<group>"; };
 		630FF21516E0269000CC20AD /* OTRManagedGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRManagedGroup.h; sourceTree = "<group>"; };
@@ -658,6 +659,8 @@
 		633E71F816E169C100495B45 /* OTRBuddyListSectionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRBuddyListSectionInfo.m; sourceTree = "<group>"; };
 		633E71FB16E170AA00495B45 /* OTRSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRSectionHeaderView.h; sourceTree = "<group>"; };
 		633E71FC16E170AA00495B45 /* OTRSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRSectionHeaderView.m; sourceTree = "<group>"; };
+		6347423018034847007DDD41 /* AFOAuth2Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFOAuth2Client.h; sourceTree = "<group>"; };
+		6347423118034847007DDD41 /* AFOAuth2Client.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFOAuth2Client.m; sourceTree = "<group>"; };
 		6348184717E3D600004E0146 /* XMPPXOATH2Google.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPXOATH2Google.h; sourceTree = "<group>"; };
 		6348184817E3D600004E0146 /* XMPPXOATH2Google.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMPPXOATH2Google.m; sourceTree = "<group>"; };
 		6348184A17E3D6B8004E0146 /* OTRXMPPOAUTHLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRXMPPOAUTHLoginViewController.h; sourceTree = "<group>"; };
@@ -1601,6 +1604,16 @@
 				633B6D0B17ED289F002DA152 /* HPTextViewInternal.m */,
 			);
 			name = HPGrowingTextView;
+			sourceTree = "<group>";
+		};
+		6347422F18034847007DDD41 /* AFOAuth2Client */ = {
+			isa = PBXGroup;
+			children = (
+				6347423018034847007DDD41 /* AFOAuth2Client.h */,
+				6347423118034847007DDD41 /* AFOAuth2Client.m */,
+			);
+			name = AFOAuth2Client;
+			path = Submodules/AFOAuth2Client/AFOAuth2Client;
 			sourceTree = "<group>";
 		};
 		6348184617E3D600004E0146 /* X-OAUTH2-google */ = {
@@ -2734,6 +2747,7 @@
 		D9CEED611684234D00B236B5 /* Submodules */ = {
 			isa = PBXGroup;
 			children = (
+				6347422F18034847007DDD41 /* AFOAuth2Client */,
 				D99020E61777CD9B00FFADE5 /* AFNetworking */,
 				D94F771B17EA86EC007768A6 /* GTMOAuth2ViewTouch.xib */,
 				633B6D0E17ED28A7002DA152 /* HPGrowingTextView */,
@@ -3634,7 +3648,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"Off the Record\"\nmogenerator --template-var arc=true -m \"ChatSecure.xcdatamodeld/ChatSecure 2.xcdatamodel/\"";
+			shellScript = "cd \"Off the Record\"\nmogenerator --template-var arc=true -m \"ChatSecure.xcdatamodeld/ChatSecure 3.xcdatamodel/\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3655,6 +3669,7 @@
 				D9BBCD3F1491F8B400AF1B9F /* OTRAboutViewController.m in Sources */,
 				D90FAF2914A0624B00DA7C56 /* OTRBuddyList.m in Sources */,
 				D9C7463D15350F62003445ED /* OTRSettingsViewController.m in Sources */,
+				6347423218034847007DDD41 /* AFOAuth2Client.m in Sources */,
 				D9C74640153512DE003445ED /* OTRSettingsManager.m in Sources */,
 				D96495C4153629FE009A8C33 /* OTRSetting.m in Sources */,
 				D96495C8153635A9009A8C33 /* OTRBoolSetting.m in Sources */,
@@ -4217,8 +4232,8 @@
 				OTHER_CFLAGS = "-DSQLITE_HAS_CODEC";
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_NAME = ChatSecure;
-				PROVISIONING_PROFILE = "84054800-7AA8-413A-B181-63B0536FC255";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "84054800-7AA8-413A-B181-63B0536FC255";
+				PROVISIONING_PROFILE = "ECB96C79-110B-46FE-AA9F-EE49DF1AC51C";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "ECB96C79-110B-46FE-AA9F-EE49DF1AC51C";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

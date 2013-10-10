@@ -95,4 +95,14 @@
     return [OTRXMPPManager class];
 }
 
+-(OTRAccountProtocol)protocol
+{
+    return OTRAccountProtocolXMPP;
+}
+
+-(NSString *)protocolString
+{
+    return kOTRProtocolTypeXMPP;
+}
+
 @end

@@ -81,6 +81,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 @synthesize isXmppConnected;
 @synthesize account;
 @synthesize buddyTimers;
+@synthesize connectionCompletionBlock;
 
 - (id) initWithAccount:(OTRManagedAccount *)newAccount {
     self = [super init];
@@ -497,6 +498,10 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 
 - (void)goOnline
 {
+    if (connectionCompletionBlock) {
+        connectionCompletionBlock(YES,nil);
+    }
+    connectionCompletionBlock = nil;
     [[NSNotificationCenter defaultCenter]
      postNotificationName:kOTRProtocolLoginSuccess object:self];
 	XMPPPresence *presence = [XMPPPresence presence]; // type="available" is implicit
@@ -514,6 +519,11 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 
 - (void)failedToConnect:(id)error
 {
+    if (connectionCompletionBlock) {
+        connectionCompletionBlock(NO,error);
+        connectionCompletionBlock = nil;
+    }
+    
     if (error) {
         [[NSNotificationCenter defaultCenter]
          postNotificationName:kOTRProtocolLoginFail object:self userInfo:@{KOTRProtocolLoginFailErrorKey:error}];
@@ -906,6 +916,12 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
 -(void)connectWithPassword:(NSString *)myPassword
 {
     [self connectWithJID:self.account.username password:myPassword];
+}
+
+-(void)connectWithPassword:(NSString *)myPassword completionBlock:(connectionCompletion)completionBlock
+{
+    self.connectionCompletionBlock = completionBlock;
+    [self connectWithPassword:myPassword];
 }
 
 -(void)sendChatState:(OTRChatState)chatState withBuddyID:(NSManagedObjectID *)managedBuddyObjectID

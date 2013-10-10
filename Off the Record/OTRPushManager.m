@@ -16,12 +16,27 @@
 @implementation OTRPushManager
 @synthesize account, isConnected;
 
--(id)initWithAccount:(OTRManagedAccount *)account
+-(id)initWithAccount:(OTRPushAccount *)newAccount
 {
     if (self = [self init]) {
-        
+        self.account = newAccount;
+        self.httpClient = [[OTRPushAPIClient alloc] init];
+        [self refreshToken];
     }
     return self;
+}
+
+- (void)refreshToken
+{
+    if (self.account.OAuthCredential) {
+        [self.httpClient refreshTokenIfNeededforAccount:self.account successBlock:^(AFOAuthCredential *OAuthcredential) {
+            self.account.OAuthCredential = OAuthcredential;
+            [self.httpClient setAuthorizationHeaderWithToken:OAuthcredential.accessToken];
+        } failureBlock:^(NSError *error) {
+            NSLog(@"Refresh token Error: %@",error);
+        }];
+        
+    }
 }
 
 - (void) sendMessage:(OTRManagedMessage*)message {
@@ -29,7 +44,7 @@
 }
 - (void) connectWithPassword:(NSString *)password {
     
-    [[OTRPushAPIClient sharedClient] connectAccount:self.account password:password successBlock:^(OTRPushAccount *loggedInAccount) {
+    [self.httpClient connectAccount:self.account password:password successBlock:^(OTRPushAccount *loggedInAccount) {
         self.isConnected = YES;
         [[NSNotificationCenter defaultCenter] postNotificationName:kOTRProtocolLoginSuccess object:nil];
     } failureBlock:^(NSError *error) {
@@ -52,6 +67,10 @@
 }
 -(void) blockBuddies:(NSArray *)buddies {
     
+}
+
++ (void) registerForPushNotifications {
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 }
 
 @end

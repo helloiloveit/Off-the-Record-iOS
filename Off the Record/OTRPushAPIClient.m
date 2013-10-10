@@ -16,19 +16,36 @@
 
 #define NSERROR_DOMAIN @"OTRPushAPIClientError"
 
-#define SERVER_URL @"http://192.168.1.115:8000/api/"
-
+#define SERVER_URL @"http://172.16.42.116:8000/"
 
 @implementation OTRPushAPIClient
 
-+ (OTRPushAPIClient *)sharedClient {
-    static OTRPushAPIClient *_sharedClient = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _sharedClient = [[OTRPushAPIClient alloc] initWithBaseURL:[NSURL URLWithString:SERVER_URL]];
-    });
-    
-    return _sharedClient;
+@synthesize oAuth2Client =_oAuth2Client;
+
++ (NSURL *)apiUrl
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",SERVER_URL,@"api/"]];
+}
++ (NSURL *)authUrl
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",SERVER_URL,@"o/token/"]];
+}
+
+-(AFOAuth2Client *)oAuth2Client
+{
+    if (!_oAuth2Client) {
+        _oAuth2Client = [[AFOAuth2Client alloc] initWithBaseURL:[[self class] authUrl] clientID:@"testId" secret:@"testSecret"];
+    }
+    return _oAuth2Client;
+}
+
+- (id)init
+{
+    self = [self initWithBaseURL:[[self class] apiUrl]];
+    if (!self) {
+        return nil;
+    }
+    return self;
 }
 
 - (id)initWithBaseURL:(NSURL *)url {
@@ -91,7 +108,14 @@
 }
 
 - (void) connectAccount:(OTRPushAccount*)account password:(NSString*)password successBlock:(void (^)(OTRPushAccount* loggedInAccount))successBlock failureBlock:(void (^)(NSError *error))failureBlock {
-    [self processAccount:account parameters:@{@"email": account.username, @"password": password} successBlock:successBlock failureBlock:failureBlock];
+    if ([account.username length] && [password length]) {
+        [self processAccount:account parameters:@{@"email": account.username, @"password": password, @"create": @(YES)} successBlock:successBlock failureBlock:failureBlock];
+    }
+    else if(failureBlock)
+    {
+        failureBlock(nil);
+    }
+    
 }
 
 - (void) createAccount:(OTRPushAccount*)account password:(NSString*)password successBlock:(void (^)(OTRPushAccount* loggedInAccount))successBlock failureBlock:(void (^)(NSError *error))failureBlock {
@@ -126,33 +150,110 @@
 
 - (void) updatePushTokenForAccount:(OTRPushAccount*)account token:(NSData *)devicePushToken successBlock:(void (^)(void))successBlock failureBlock:(void (^)(NSError *error))failureBlock {
     NSDictionary *parameters = @{@"device_type": @"iPhone", @"operating_system": @"iOS", @"apple_push_token": [devicePushToken hexStringValue]};
-
-    if (!account.isConnected.boolValue) {
-        [self connectAccount:account password:account.password successBlock:^(OTRPushAccount *loggedInAccount) {
-            NSLog(@"Account logged in: %@, updating push token...", loggedInAccount.username);
-            [self updatePushTokenForAccount:loggedInAccount token:devicePushToken successBlock:successBlock failureBlock:failureBlock];
-        } failureBlock:failureBlock];
-        return;
-    }
-    [self postPath:@"device/" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"Token updated: %@", responseObject);
-        if ([responseObject isKindOfClass:[NSDictionary class]]) {
-            BOOL success = [[responseObject objectForKey:@"success"] boolValue];
-            if (success) {
-                if (successBlock) {
-                    successBlock();
+    
+    if (account) {
+        [self postPath:@"device/" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"Token updated: %@", responseObject);
+            if ([responseObject isKindOfClass:[NSDictionary class]]) {
+                BOOL success = [[responseObject objectForKey:@"success"] boolValue];
+                if (success) {
+                    if (successBlock) {
+                        successBlock();
+                    }
+                    return;
                 }
-                return;
             }
+            if (failureBlock) {
+                failureBlock([NSError errorWithDomain:NSERROR_DOMAIN code:101 userInfo:@{NSLocalizedDescriptionKey: @"Data is not good!", @"data": responseObject}]);
+            }
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            if (failureBlock) {
+                failureBlock(error);
+            }
+        }];
+    }
+    
+}
+
+- (void)refreshTokenIfNeededforAccount:(OTRPushAccount *)account successBlock:(void (^)(AFOAuthCredential * OAuthcredential))successBlock failureBlock:(void (^)(NSError *error))failureBlock
+{
+    if ([account.username length]) {
+        AFOAuthCredential * credential = account.OAuthCredential;
+        if (credential.isExpired) {
+            [self.oAuth2Client authenticateUsingOAuthWithPath:nil refreshToken:credential.refreshToken success:^(AFOAuthCredential *credential) {
+                account.OAuthCredential = credential;
+                if (successBlock) {
+                    successBlock(credential);
+                }
+            } failure:^(NSError *error) {
+                if (failureBlock) {
+                    failureBlock(error);
+                }
+            }];
         }
+        else {
+            
+            if (successBlock) {
+                successBlock(credential);
+            }
+            else if (failureBlock){
+                failureBlock(nil);
+            }
+            
+        }
+    }
+    
+}
+
+- (void)fetchTokenForUsername:(NSString *)username password:(NSString *)password successBlock:(void (^)(AFOAuthCredential * OAuthcredential))successBlock failureBlock:(void (^)(NSError *error))failureBlock
+{
+    [self.oAuth2Client authenticateUsingOAuthWithPath:nil username:username password:password scope:nil success:^(AFOAuthCredential *credential) {
+        if (successBlock) {
+            [AFOAuthCredential storeCredential:credential withIdentifier:username];
+            successBlock(credential);
+        }
+    } failure:^(NSError *error) {
         if (failureBlock) {
-            failureBlock([NSError errorWithDomain:NSERROR_DOMAIN code:101 userInfo:@{NSLocalizedDescriptionKey: @"Data is not good!", @"data": responseObject}]);
+            failureBlock(error);
+        }
+    }];
+}
+
+- (void)sendMessage:(NSString *)message toBuddy:(OTRManagedBuddy *)buddy successBlock:(void (^)(void))successBlock failureBlock:(void (^)(NSError *))failureBlock
+{
+    [self postPath:@"message/" parameters:@{@"email":buddy.accountName,@"text":message} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if (successBlock) {
+            successBlock();
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         if (failureBlock) {
             failureBlock(error);
         }
     }];
+}
+
+#pragma mark
+- (void)setAuthorizationHeaderWithToken:(NSString *)token {
+    // Use the "Bearer" type as an arbitrary default
+    [self setAuthorizationHeaderWithToken:token ofType:@"Bearer"];
+}
+
+- (void)setAuthorizationHeaderWithCredential:(AFOAuthCredential *)credential {
+    [self setAuthorizationHeaderWithToken:credential.accessToken ofType:credential.tokenType];
+}
+
+- (void)setAuthorizationHeaderWithToken:(NSString *)token
+                                 ofType:(NSString *)type
+{
+    // See http://tools.ietf.org/html/rfc6749#section-7.1
+    if ([[type lowercaseString] isEqualToString:@"bearer"]) {
+        [self setDefaultHeader:@"Authorization" value:[NSString stringWithFormat:@"Bearer %@", token]];
+    }
+}
+
++ (void)fetchTokenForUsername:(NSString *)username password:(NSString *)password successBlock:(void (^)(AFOAuthCredential * OAuthcredential))successBlock failureBlock:(void (^)(NSError *error))failureBlock
+{
+    [[[self alloc] init] fetchTokenForUsername:username password:password successBlock:successBlock failureBlock:failureBlock];
 }
 
 @end

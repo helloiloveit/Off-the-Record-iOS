@@ -367,11 +367,13 @@
     }
     
     if ([managedBuddy.account isKindOfClass:[OTRPushAccount class]]) {
+        /*
         [[OTRPushAPIClient sharedClient] sendPushToBuddy:managedBuddy successBlock:^{
             NSLog(@"Push sent!");
         } failureBlock:^(NSError *error) {
             NSLog(@"Error sending push: %@", error.userInfo);
         }];
+         */
         return;
     }
     

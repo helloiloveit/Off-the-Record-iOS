@@ -47,4 +47,14 @@
     return OTRAccountTypeAIM;
 }
 
+-(OTRAccountProtocol)protocol
+{
+    return OTRAccountProtocolAIM;
+}
+
+-(NSString *)protocolString
+{
+    return kOTRProtocolTypeAIM;
+}
+
 @end

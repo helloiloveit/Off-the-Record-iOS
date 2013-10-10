@@ -40,6 +40,8 @@
 
 
 @property (nonatomic, retain) NSString *password; // nil if rememberPassword = NO, not stored in memory
+@property (readonly) OTRAccountProtocol protocol;
+@property (nonatomic,readonly) NSString * protocolString;
 
 - (void) save;
 - (Class) protocolClass;
@@ -47,17 +49,19 @@
 - (OTRAccountType)accountType;
 - (NSString *) imageName;
 
--(void)setNewUsername:(NSString *)newUsername;
+- (void)setNewUsername:(NSString *)newUsername;
 - (void) setDefaultsWithProtocol:(NSString*)newProtocol;
 
--(void)setAllBuddiesStatuts:(OTRBuddyStatus)status;
--(void)deleteAllConversationsForAccount;
+- (void)setAllBuddiesStatuts:(OTRBuddyStatus)status;
+- (void)deleteAllConversationsForAccount;
 
--(void)prepareBuddiesandMessagesForDeletion;
+- (void)prepareBuddiesandMessagesForDeletion;
 
 
 //Goes through all accounts checks if it's connected againgst ProtocolManager and adjusts buddy status
 +(void)resetAccountsConnectionStatus;
+
++(OTRManagedAccount *)accountWithName:(NSString *)accountName forProtocol:(OTRAccountProtocol)protocol;
 
 @end
 

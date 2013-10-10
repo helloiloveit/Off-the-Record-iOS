@@ -6,7 +6,6 @@
 
 extern const struct OTRManagedAccountAttributes {
 	__unsafe_unretained NSString *isConnected;
-	__unsafe_unretained NSString *protocol;
 	__unsafe_unretained NSString *rememberPassword;
 	__unsafe_unretained NSString *uniqueIdentifier;
 	__unsafe_unretained NSString *username;
@@ -20,7 +19,6 @@ extern const struct OTRManagedAccountFetchedProperties {
 } OTRManagedAccountFetchedProperties;
 
 @class OTRManagedBuddy;
-
 
 
 
@@ -49,16 +47,6 @@ extern const struct OTRManagedAccountFetchedProperties {
 - (void)setIsConnectedValue:(BOOL)value_;
 
 //- (BOOL)validateIsConnected:(id*)value_ error:(NSError**)error_;
-
-
-
-
-
-@property (nonatomic, strong) NSString* protocol;
-
-
-
-//- (BOOL)validateProtocol:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -125,12 +113,6 @@ extern const struct OTRManagedAccountFetchedProperties {
 
 - (BOOL)primitiveIsConnectedValue;
 - (void)setPrimitiveIsConnectedValue:(BOOL)value_;
-
-
-
-
-- (NSString*)primitiveProtocol;
-- (void)setPrimitiveProtocol:(NSString*)value;
 
 
 

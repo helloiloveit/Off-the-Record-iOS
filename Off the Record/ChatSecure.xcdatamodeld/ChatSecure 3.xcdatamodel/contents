@@ -2,7 +2,6 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3396" systemVersion="12F37" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="OTRManagedAccount" representedClassName="OTRManagedAccount" syncable="YES">
         <attribute name="isConnected" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="protocol" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rememberPassword" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="uniqueIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
@@ -73,7 +72,7 @@
         <relationship name="xmppAccount" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="OTRManagedXMPPAccount" inverseName="subscriptionRequests" inverseEntity="OTRManagedXMPPAccount" syncable="YES"/>
     </entity>
     <elements>
-        <element name="OTRManagedAccount" positionX="340" positionY="153" width="128" height="133"/>
+        <element name="OTRManagedAccount" positionX="340" positionY="153" width="128" height="118"/>
         <element name="OTRManagedBuddy" positionX="106" positionY="-0" width="128" height="268"/>
         <element name="OTRManagedEncryptionStatusMessage" positionX="-414" positionY="252" width="243" height="73"/>
         <element name="OTRManagedFacebookAccount" positionX="754" positionY="459" width="128" height="43"/>
@@ -85,7 +84,7 @@
         <element name="OTRManagedOscarAccount" positionX="522" positionY="137" width="128" height="43"/>
         <element name="OTRManagedStatus" positionX="-290" positionY="161" width="128" height="73"/>
         <element name="OTRManagedXMPPAccount" positionX="520" positionY="198" width="128" height="178"/>
-        <element name="OTRXMPPManagedPresenceSubscriptionRequest" positionX="324" positionY="320" width="153" height="103"/>
         <element name="OTRPushAccount" positionX="522" positionY="56" width="128" height="43"/>
+        <element name="OTRXMPPManagedPresenceSubscriptionRequest" positionX="324" positionY="320" width="153" height="103"/>
     </elements>
 </model>

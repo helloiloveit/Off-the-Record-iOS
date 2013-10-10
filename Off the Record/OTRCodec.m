@@ -33,7 +33,7 @@
 {
     NSString *message = theMessage.message;
     NSString *friendAccount = theMessage.buddy.accountName;
-    NSString *protocol = theMessage.buddy.account.protocol;
+    NSString *protocol = theMessage.buddy.account.protocolString;
     NSString *myAccountName = theMessage.buddy.account.username;
     
     NSString *decodedMessageString = [[OTRKit sharedInstance] decodeMessage:message recipient:friendAccount accountName:myAccountName protocol:protocol];
@@ -59,7 +59,7 @@
 {
     NSString *message = theMessage.message;
     NSString *recipientAccount = theMessage.buddy.accountName;
-    NSString *protocol = theMessage.buddy.account.protocol;
+    NSString *protocol = theMessage.buddy.account.protocolString;
     NSString *sendingAccount = theMessage.buddy.account.username;
     //theMessage.isEncryptedValue = NO;
     
@@ -85,7 +85,7 @@
 {
     NSString *message = theMessage.message;
     NSString *recipientAccount = theMessage.buddy.accountName;
-    NSString *protocol = theMessage.buddy.account.protocol;
+    NSString *protocol = theMessage.buddy.account.protocolString;
     NSString *sendingAccount = theMessage.buddy.account.username;
     //theMessage.isEncryptedValue = NO;
     
@@ -105,7 +105,7 @@
 {
     if(buddy)
     {
-        [[OTRKit sharedInstance] checkIfGeneratingKeyForAccountName:buddy.account.username protocol:buddy.account.protocol completion:completion];
+        [[OTRKit sharedInstance] checkIfGeneratingKeyForAccountName:buddy.account.username protocol:buddy.account.protocolString completion:completion];
     }
     else if (completion){
         completion(NO);

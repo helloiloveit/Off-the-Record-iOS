@@ -22,12 +22,16 @@
 
 @class OTRManagedMessage, OTRManagedBuddy, OTRManagedAccount;
 
+typedef void (^connectionCompletion)(BOOL didConnect,NSError *error);
+
 @protocol OTRProtocol <NSObject>
 
 @property (nonatomic, strong) OTRManagedAccount * account;
+@property (nonatomic, copy) connectionCompletion connectionCompletionBlock;
 
 - (void) sendMessage:(OTRManagedMessage*)message;
 - (void) connectWithPassword:(NSString *)password;
+- (void) connectWithPassword:(NSString *)password completionBlock:(connectionCompletion)completionBlock;
 - (void) disconnect;
 - (void) addBuddy:(OTRManagedBuddy *)newBuddy;
 - (BOOL) isConnected;
@@ -41,5 +45,5 @@
 
 @protocol OTRXMPPProtocol <OTRProtocol>
 - (void)sendChatState:(int)chatState withBuddy:(OTRManagedBuddy *)buddy;
-- (void) setDisplayName:(NSString *) newDisplayName forBuddy:(OTRManagedBuddy *)buddy;
+- (void)setDisplayName:(NSString *) newDisplayName forBuddy:(OTRManagedBuddy *)buddy;
 @end

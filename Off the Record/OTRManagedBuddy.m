@@ -153,7 +153,7 @@
             NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
             [userInfo setObject:self.accountName forKey:kOTRNotificationUserNameKey];
             [userInfo setObject:self.account.username forKey:kOTRNotificationAccountNameKey];
-            [userInfo setObject:self.account.protocol forKey:kOTRNotificationProtocolKey];
+            [userInfo setObject:self.account.protocolString forKey:kOTRNotificationProtocolKey];
             localNotification.userInfo = userInfo;
             
             [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];

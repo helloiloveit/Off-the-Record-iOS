@@ -38,6 +38,8 @@
 #import "OTRAccountsManager.h"
 #import "FacebookSDK.h"
 #import "OTRAppVersionManager.h"
+#import "OTRPushManager.h"
+#import "OTRProtocolManager.h"
 
 // Log levels: off, error, warn, info, verbose
 #if DEBUG
@@ -70,7 +72,7 @@ static const int ddLogLevel = LOG_LEVEL_WARN;
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:storeFileName];
     NSURL * fileURL = [NSPersistentStore MR_urlForStoreName:storeFileName];
     
-    NSDictionary *fileAttributes = [NSDictionary dictionaryWithObject:NSFileProtectionCompleteUnlessOpen forKey:NSFileProtectionKey];
+    NSDictionary *fileAttributes = [NSDictionary dictionaryWithObject:NSFileProtectionCompleteUntilFirstUserAuthentication forKey:NSFileProtectionKey];
     NSError * error = nil;
     
     if (![[NSFileManager defaultManager] setAttributes:fileAttributes ofItemAtPath:[fileURL path] error:&error])
@@ -313,8 +315,9 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
     NSArray *accounts = [OTRPushAccount MR_findAll];
     for (OTRPushAccount *account in accounts) {
+        OTRPushManager * pushManager = [[OTRProtocolManager sharedInstance] protocolForAccount:account];
         NSString *username = account.username;
-        [[OTRPushAPIClient sharedClient] updatePushTokenForAccount:account token:devToken  successBlock:^(void) {
+        [pushManager.httpClient updatePushTokenForAccount:account token:devToken successBlock:^{
             NSLog(@"Device token updated for (%@): %@", username, devToken.description);
         } failureBlock:^(NSError *error) {
             NSLog(@"Error updating push token: %@", error.userInfo);
@@ -333,6 +336,68 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
     return [[FBSession activeSession] handleOpenURL:url];
+}
+
+-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    //30 seconds
+    //connnect
+    NSString * accountName = [userInfo objectForKey:@"to"];
+    NSString * buddyName = [userInfo objectForKey:@"from"];
+    
+    [self showLocalNotificationWithString:@"Got notification"];
+    
+    OTRManagedAccount * account = [OTRManagedAccount accountWithName:accountName forProtocol:OTRAccountProtocolXMPP];
+    
+    if (!accountName && completionHandler) {
+        completionHandler(UIBackgroundFetchResultFailed);
+    }
+    else
+    {
+        id<OTRProtocol> protocol = [[OTRProtocolManager sharedInstance] protocolForAccount:account];
+        if(![protocol isConnected])
+        {
+            [self showLocalNotificationWithString:@"Connecting..."];
+            [protocol connectWithPassword:account.password completionBlock:^(BOOL didConnect, NSError *error) {
+                if (didConnect) {
+                    [self showLocalNotificationWithString:@"Connected"];
+                    OTRManagedBuddy * buddy = [OTRManagedBuddy fetchOrCreateWithName:buddyName account:account];
+                    OTRManagedMessage * message = [OTRManagedMessage newMessageToBuddy:buddy message:@"I'm from a push Message" encrypted:NO];
+                    [protocol sendMessage:message];
+                    /*if (completionHandler) {
+                        completionHandler(UIBackgroundFetchResultNewData);
+                    }*/
+                }
+                else if(completionHandler){
+                    completionHandler(UIBackgroundFetchResultFailed);
+                }
+            }];
+        }
+        else {
+            [self showLocalNotificationWithString:@"Already Connected"];
+            OTRManagedBuddy * buddy = [OTRManagedBuddy fetchOrCreateWithName:buddyName account:account];
+            OTRManagedMessage * message = [OTRManagedMessage newMessageToBuddy:buddy message:@"I'm from a push Message" encrypted:NO];
+            [protocol sendMessage:message];
+            /*if (completionHandler) {
+                completionHandler(UIBackgroundFetchResultNewData);
+            }*/
+        }
+        
+        
+    }
+    
+    //initiated otr with jid in userinfo
+}
+
+-(void)showLocalNotificationWithString:(NSString *)message
+{
+    UILocalNotification *localNotif = [[UILocalNotification alloc] init];
+    if (localNotif) {
+        localNotif.alertBody = message;
+        localNotif.alertAction = OK_STRING;
+        localNotif.soundName = UILocalNotificationDefaultSoundName;
+        [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
+    }
 }
 
 @end

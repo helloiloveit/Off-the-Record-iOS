@@ -78,7 +78,7 @@
     OTRManagedOAuthAccount * oAuthAccount = [self MR_createEntity];
     
     oAuthAccount.username = xmppAccount.username;
-    oAuthAccount.protocol = xmppAccount.protocol;
+    //oAuthAccount.protocol = xmppAccount.protocol;
     oAuthAccount.rememberPassword = xmppAccount.rememberPassword;
     oAuthAccount.uniqueIdentifier = xmppAccount.uniqueIdentifier;
     oAuthAccount.allowPlainTextAuthentication = xmppAccount.allowPlainTextAuthentication;

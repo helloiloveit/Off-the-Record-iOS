@@ -182,7 +182,7 @@
             NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
             [userInfo setObject:accountName forKey:kOTRNotificationUserNameKey];
             [userInfo setObject:protocol.account.username forKey:kOTRNotificationAccountNameKey];
-            [userInfo setObject:protocol.account.protocol forKey:kOTRNotificationProtocolKey];
+            [userInfo setObject:protocol.account.protocolString forKey:kOTRNotificationProtocolKey];
             localNotification.userInfo = userInfo;
             
             [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
@@ -225,7 +225,7 @@
 
 -(void)setStatus:(OTRBuddyStatus)newStatus
 {
-    if([self.protocol.account.protocol isEqualToString:kOTRProtocolTypeXMPP])
+    if(self.protocol.account.protocol == OTRAccountProtocolXMPP)
     {
         if ([self.chatHistory length]!=0 && newStatus!=status)
         {

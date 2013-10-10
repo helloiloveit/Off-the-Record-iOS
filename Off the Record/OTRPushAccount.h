@@ -9,9 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "_OTRPushAccount.h"
+#import "OTRManagedOAuthAccount.h"
 
+@class AFOAuthCredential;
 
 @interface OTRPushAccount : _OTRPushAccount
+
+@property (nonatomic,strong) AFOAuthCredential * OAuthCredential;
 
 
 

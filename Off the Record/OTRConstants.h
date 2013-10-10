@@ -107,6 +107,13 @@ typedef NS_ENUM(NSUInteger, OTRAccountType) {
     OTRAccountTypePush        = 5
 };
 
+typedef NS_ENUM(NSUInteger, OTRAccountProtocol) {
+    OTRAccountProtocolNone = 0,
+    OTRAccountProtocolXMPP = 1,
+    OTRAccountProtocolAIM  = 2,
+    OTRAccountProtocolPush = 3
+};
+
 //Chatview
 #define kTabBarHeight 0
 #define kSendButtonWidth 60

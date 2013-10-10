@@ -57,7 +57,7 @@
 
 - (id) init {
     if (self = [super init]) {
-        self.pushClient = [OTRPushAPIClient sharedClient];
+        //self.pushClient = [OTRPushAPIClient sharedClient];
     }
     return self;
 }
@@ -247,7 +247,7 @@
     if (!patsDictionary) {
         patsDictionary = [NSMutableDictionary dictionary];
     }
-    NSMutableDictionary *patsProtocolDictionary = [NSMutableDictionary dictionaryWithDictionary:[patsDictionary objectForKey:buddy.account.protocol]];
+    NSMutableDictionary *patsProtocolDictionary = [NSMutableDictionary dictionaryWithDictionary:[patsDictionary objectForKey:buddy.account.protocolString]];
     if (!patsProtocolDictionary) {
         patsProtocolDictionary = [NSMutableDictionary dictionary];
     }
@@ -262,7 +262,7 @@
     NSMutableDictionary *patsAccountDictionary = [self patAccountsDictionaryForBuddy:buddy];
     [patsAccountDictionary setObject:patDictionary forKey:buddy.accountName];
     [patsProtocolDictionary setObject:patsAccountDictionary forKey:buddy.account.username];
-    [patsDictionary setObject:patsProtocolDictionary forKey:buddy.account.protocol];
+    [patsDictionary setObject:patsProtocolDictionary forKey:buddy.account.protocolString];
     [accountDictionary setObject:patsDictionary forKey:PATS_KEY];
     [self saveAccountDictionary:accountDictionary];
 }

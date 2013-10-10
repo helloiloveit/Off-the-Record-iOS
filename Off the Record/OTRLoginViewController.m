@@ -344,7 +344,7 @@
 {
     if(HUD)
         [HUD hide:YES];
-    if([account.protocol isEqualToString:kOTRProtocolTypeXMPP])
+    if(account.protocol == OTRAccountProtocolXMPP)
     {
         UIAlertView *alert = nil;
         NSDictionary * userInfo = notification.userInfo;

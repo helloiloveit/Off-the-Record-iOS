@@ -9,8 +9,11 @@
 #import "OTRPushAccount.h"
 #import "Strings.h"
 #import "OTRPushManager.h"
+#import "OTRPushAPIClient.h"
 
 @implementation OTRPushAccount
+
+@synthesize OAuthCredential = _OAuthCredential;
 
 - (NSString *) imageName {
     return @"ipad.png";
@@ -28,6 +31,31 @@
 -(OTRAccountType)accountType
 {
     return OTRAccountTypePush;
+}
+
+-(OTRAccountProtocol)protocol
+{
+    return OTRAccountProtocolPush;
+}
+-(NSString *)protocolString
+{
+    return kOTRProtocolTypePush;
+}
+
+-(AFOAuthCredential *)OAuthCredential
+{
+    if (!_OAuthCredential) {
+        _OAuthCredential = [AFOAuthCredential retrieveCredentialWithIdentifier:self.username];
+    }
+    return _OAuthCredential;
+}
+
+-(void)setOAuthCredential:(AFOAuthCredential *)OAuthCredential
+{
+    if (![OAuthCredential isEqual:_OAuthCredential]) {
+        [AFOAuthCredential storeCredential:OAuthCredential withIdentifier:self.username];
+    }
+    _OAuthCredential = OAuthCredential;
 }
 
 @end

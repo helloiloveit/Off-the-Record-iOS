@@ -48,7 +48,7 @@
         [managagedXmppAccount setSendTypingNotificationsValue:xmppAccount.sendTypingNotifications];
         [managagedXmppAccount setAllowSelfSignedSSLValue:xmppAccount.allowSelfSignedSSL ];
          managagedXmppAccount.allowSSLHostNameMismatchValue = xmppAccount.allowSSLHostNameMismatch;
-        managagedXmppAccount.protocol = xmppAccount.protocol;
+        //managagedXmppAccount.protocol = xmppAccount.protocol;
         [managagedXmppAccount setRememberPasswordValue:xmppAccount.rememberPassword];
         managagedXmppAccount.password = xmppAccount.password;
         [managagedXmppAccount setIsConnected:NO];
@@ -67,7 +67,7 @@
         
         OTRManagedOscarAccount * managedOscarAccount = [OTRManagedOscarAccount MR_createEntity];
         
-        managedOscarAccount.protocol = oscarAccount.protocol;
+        //managedOscarAccount.protocol = oscarAccount.protocol;
         managedOscarAccount.password = oscarAccount.password;
         managedOscarAccount.uniqueIdentifier = managedOscarAccount.uniqueIdentifier;
         [managedOscarAccount setNewUsername:oscarAccount.username];

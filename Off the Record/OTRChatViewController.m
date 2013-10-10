@@ -144,7 +144,7 @@
     }];
     UIBarButtonItem * rightBarItem = self.navigationItem.rightBarButtonItem;
     if ([rightBarItem isEqual:lockButton] || [rightBarItem isEqual:lockVerifiedButton] || [rightBarItem isEqual:unlockedButton] || !rightBarItem) {
-        BOOL trusted = [[OTRKit sharedInstance] finerprintIsVerifiedForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocol];
+        BOOL trusted = [[OTRKit sharedInstance] finerprintIsVerifiedForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocolString];
         
         int16_t currentEncryptionStatus = [self.buddy currentEncryptionStatus].statusValue;
         
@@ -369,9 +369,9 @@
         if (buttonIndex == 1) // Verify
         {
             NSString *msg = nil;
-            NSString *ourFingerprintString = [[OTRKit sharedInstance] fingerprintForAccountName:buddy.account.username protocol:buddy.account.protocol];
-            NSString *theirFingerprintString = [[OTRKit sharedInstance] fingerprintForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocol];
-            BOOL trusted = [[OTRKit sharedInstance] finerprintIsVerifiedForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocol];
+            NSString *ourFingerprintString = [[OTRKit sharedInstance] fingerprintForAccountName:buddy.account.username protocol:buddy.account.protocolString];
+            NSString *theirFingerprintString = [[OTRKit sharedInstance] fingerprintForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocolString];
+            BOOL trusted = [[OTRKit sharedInstance] finerprintIsVerifiedForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocolString];
             
             
             UIAlertView * alert;
@@ -398,7 +398,7 @@
         {
             if([self.buddy currentEncryptionStatus].statusValue == kOTRKitMessageStateEncrypted)
             {
-                [[OTRKit sharedInstance]disableEncryptionForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocol];
+                [[OTRKit sharedInstance]disableEncryptionForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocolString];
             } else {
                 OTRManagedBuddy* theBuddy = buddy;
                 OTRManagedMessage * newMessage = [OTRManagedMessage newMessageToBuddy:theBuddy message:@"" encrypted:YES];
@@ -449,12 +449,12 @@
 {
     if(alertView.cancelButtonIndex != buttonIndex && alertView.tag == ALERTVIEW_NOT_VERIFIED_TAG)
     {
-        [[OTRKit sharedInstance] changeVerifyFingerprintForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocol verrified:YES];
+        [[OTRKit sharedInstance] changeVerifyFingerprintForUsername:buddy.accountName accountName:buddy.account.username protocol:buddy.account.protocolString verrified:YES];
         [self refreshLockButton];
     }
     else if(alertView.cancelButtonIndex != buttonIndex && alertView.tag == ALERTVIEW_VERIFIED_TAG)
     {
-        [[OTRKit sharedInstance] changeVerifyFingerprintForUsername:buddy.accountName accountName:buddy.account.username  protocol:buddy.account.protocol verrified:NO];
+        [[OTRKit sharedInstance] changeVerifyFingerprintForUsername:buddy.accountName accountName:buddy.account.username  protocol:buddy.account.protocolString verrified:NO];
         [self refreshLockButton];
     }
 }

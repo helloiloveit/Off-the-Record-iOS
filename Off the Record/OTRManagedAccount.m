@@ -42,7 +42,7 @@
 
 - (void) setDefaultsWithProtocol:(NSString*)newProtocol {
     self.username = @"";
-    self.protocol = newProtocol;
+    //self.protocol = newProtocol;
     self.rememberPassword = NO;
     self.isConnected = NO;
     self.uniqueIdentifier = [OTRUtilities uniqueString];
@@ -131,6 +131,16 @@
     return @"";
 }
 
+-(OTRAccountProtocol)protocol
+{
+    return OTRAccountProtocolNone;
+}
+
+-(NSString *)protocolString
+{
+    return @"";
+}
+
 -(NSNumber *)isConnected
 {
     return [NSNumber numberWithBool:[[OTRProtocolManager sharedInstance] isAccountConnected:self]];
@@ -193,6 +203,25 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     [context MR_saveToPersistentStoreAndWait];
     
+}
+
++(OTRManagedAccount *)accountWithName:(NSString *)accountName forProtocol:(OTRAccountProtocol)protocol
+{
+    NSArray * allAccounts = [OTRManagedAccount MR_findAll];
+    NSPredicate * predicate = [NSPredicate predicateWithFormat:@"self.%@ ==[c] %@",OTRManagedAccountAttributes.username,accountName];
+    NSArray * matchingAccountsArray = [OTRManagedAccount MR_findAllWithPredicate:predicate];
+    __block OTRManagedAccount * account = nil;
+    
+    if ([matchingAccountsArray count] == 1) {
+        account = [matchingAccountsArray lastObject];
+    }
+    else{
+        NSPredicate * typePredicate = [NSPredicate predicateWithFormat:@"self.protocol == %d",protocol];
+        NSArray * matchedAccount = [matchingAccountsArray filteredArrayUsingPredicate:typePredicate];
+        account = [matchedAccount lastObject];
+    }
+    
+    return account;
 }
 
 @end

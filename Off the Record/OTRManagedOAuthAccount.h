@@ -3,9 +3,11 @@
 @protocol OTRManagedOAuthAccountProtocol <NSObject>
 
 @optional
--(void)refreshToken:(void (^)(NSError *error))completionBlock;
--(void)refreshTokenIfNeeded:(void (^)(NSError *error))completion;
--(NSString *)accessTokenString;
+- (void)refreshToken:(void (^)(NSError *error))completionBlock;
+- (void)refreshTokenIfNeeded:(void (^)(NSError *error))completion;
+- (NSString *)accessTokenString;
+- (void)setTokenDictionary:(NSDictionary *)accessTokenDictionary;
+- (NSDictionary *)tokenDictionary;
 
 @end
 
@@ -15,5 +17,9 @@
 @property (nonatomic,strong) NSDictionary * tokenDictionary;
 
 + (id)createWithXmppAccount:(OTRManagedXMPPAccount *)xmppAccount;
+
+
++ (void)setTokenDictionary:(NSDictionary *)accessTokenDictionary;
++ (NSDictionary *)tokenDictionary;
 
 @end

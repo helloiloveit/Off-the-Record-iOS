@@ -5,7 +5,6 @@
 
 const struct OTRManagedAccountAttributes OTRManagedAccountAttributes = {
 	.isConnected = @"isConnected",
-	.protocol = @"protocol",
 	.rememberPassword = @"rememberPassword",
 	.uniqueIdentifier = @"uniqueIdentifier",
 	.username = @"username",
@@ -82,13 +81,6 @@ const struct OTRManagedAccountFetchedProperties OTRManagedAccountFetchedProperti
 - (void)setPrimitiveIsConnectedValue:(BOOL)value_ {
 	[self setPrimitiveIsConnected:[NSNumber numberWithBool:value_]];
 }
-
-
-
-
-
-@dynamic protocol;
-
 
 
 

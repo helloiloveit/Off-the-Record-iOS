@@ -10,9 +10,16 @@
 #import "OTRProtocol.h"
 #import "OTRPushAccount.h"
 
+@class OTRPushAPIClient;
+
 @interface OTRPushManager : NSObject <OTRProtocol>
 
 @property (nonatomic) BOOL isConnected;
 @property (nonatomic, strong) OTRPushAccount *account;
+@property (nonatomic, strong) OTRPushAPIClient * httpClient;
+
+- (void)refreshToken;
+
++ (void) registerForPushNotifications;
 
 @end

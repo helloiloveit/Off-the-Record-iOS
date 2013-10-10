@@ -33,6 +33,7 @@
 @synthesize loginFailed;
 @synthesize loggedIn;
 @synthesize account;
+@synthesize connectionCompletionBlock;
 
 BOOL loginFailed;
 
@@ -124,6 +125,10 @@ BOOL loginFailed;
 
 - (void)aimLogin:(AIMLogin *)theLogin failedWithError:(NSError *)error {
 	[self checkThreading];
+    if (connectionCompletionBlock) {
+        connectionCompletionBlock(NO,error);
+    }
+    connectionCompletionBlock = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:kOTRProtocolLoginFail object:self];
     //NSLog(@"login error: %@",[error description]);
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Login Error" message:@"AIM login failed. Please check your username and password and try again." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
@@ -160,7 +165,10 @@ BOOL loginFailed;
 	
 	// uncomment to test rate limit detection.
 	// [self sendBogus];
-        
+    if (connectionCompletionBlock) {
+        connectionCompletionBlock(YES,nil);
+    }
+    connectionCompletionBlock = nil;
     [[NSNotificationCenter defaultCenter]
      postNotificationName:kOTRProtocolLoginSuccess
      object:self];
@@ -603,6 +611,13 @@ BOOL loginFailed;
     [self.login setDelegate:self];
     [self.login beginAuthorization];
 }
+
+-(void)connectWithPassword:(NSString *)password completionBlock:(connectionCompletion)completionBlock
+{
+    self.connectionCompletionBlock = completionBlock;
+    [self connectWithPassword:password];
+}
+
 -(void)disconnect
 {
     [[self theSession].session closeConnection];
