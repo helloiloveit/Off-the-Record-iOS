@@ -345,7 +345,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSString * accountName = [userInfo objectForKey:@"to"];
     NSString * buddyName = [userInfo objectForKey:@"from"];
     
-    [self showLocalNotificationWithString:@"Got notification"];
+    [self showLocalNotificationWithString:[NSString stringWithFormat:@"Got notification\nAccount:%@\nBuddy:%@",accountName,buddyName]];
     
     OTRManagedAccount * account = [OTRManagedAccount accountWithName:accountName forProtocol:OTRAccountProtocolXMPP];
     
@@ -369,6 +369,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
                     }*/
                 }
                 else if(completionHandler){
+                    [self showLocalNotificationWithString:[NSString stringWithFormat:@"Connection Error: %@",error]];
                     completionHandler(UIBackgroundFetchResultFailed);
                 }
             }];
