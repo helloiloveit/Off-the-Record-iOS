@@ -245,7 +245,7 @@
     swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom)];
     [self.view addGestureRecognizer:swipeGestureRecognizer];
     
-    [self setupLockButton];
+   // [self setupLockButton];
     
 }
 

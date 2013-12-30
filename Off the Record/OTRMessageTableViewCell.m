@@ -136,9 +136,11 @@
     
     messageTextLabel.text = message.message;
     messageTextLabel.font = [UIFont systemFontOfSize:messageFontSize];
+   // messageTextLabel.textColor = [UIColor blackColor];
     CGSize messageTextLabelSize = [messageTextLabel sizeThatFits:CGSizeMake(MESSAGE_TEXT_WIDTH_MAX, CGFLOAT_MAX)];
     
     if (!message.isIncomingValue) { // right message
+        
         UIImage * _messageBubbleBlue = [[UIImage imageNamed:kOTRRightImageName]stretchableImageWithLeftCapWidth:15 topCapHeight:13];
         messageBackgroundImageView.frame = CGRectMake(width-messageTextLabelSize.width-34, messageSentDateLabelHeight+messageFontSize-13, messageTextLabelSize.width+34, messageTextLabelSize.height+12);
         messageBackgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
@@ -146,7 +148,9 @@
         
         messageTextLabel.frame = CGRectMake(width-messageTextLabelSize.width-22, messageSentDateLabelHeight+messageFontSize-9, messageTextLabelSize.width+5, messageTextLabelSize.height);
         messageTextLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        
     } else {
+        
         UIImage * _messageBubbleGray = [[UIImage imageNamed:kOTRLeftImageName] stretchableImageWithLeftCapWidth:23 topCapHeight:15];
         messageBackgroundImageView.frame = CGRectMake(0, messageSentDateLabelHeight+messageFontSize-13, messageTextLabelSize.width+34, messageTextLabelSize.height+12);
         messageBackgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
@@ -154,6 +158,7 @@
         
         messageTextLabel.frame = CGRectMake(22, messageSentDateLabelHeight+messageFontSize-9, messageTextLabelSize.width+5, messageTextLabelSize.height);
         messageTextLabel.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+        
     }
     
     if(message.isDeliveredValue)

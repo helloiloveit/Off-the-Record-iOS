@@ -68,6 +68,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>2.1.2</string>
+	<key>FacebookAppID</key>
+	<string>248577781948157</string>
+	<key>FacebookDisplayName</key>
+	<string>BongNgo</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
