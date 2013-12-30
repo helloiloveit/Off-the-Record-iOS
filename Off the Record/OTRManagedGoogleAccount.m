@@ -144,7 +144,7 @@
         [auth setParameters:[tokenDictionary mutableCopy]];
     }
     auth.clientID = GOOGLE_APP_ID;
-    auth.clientSecret = GOOGLE_APP_SECRET;
+ //   auth.clientSecret = GOOGLE_APP_SECRET;
     auth.scope = GOOGLE_APP_SCOPE;
     auth.tokenURL = [GTMOAuth2SignIn googleTokenURL];
     return auth;
