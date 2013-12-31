@@ -662,6 +662,7 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"indexPath = %f", indexPath.row);
     NSInteger lastIndex = ([[self.messagesFetchedResultsController sections][indexPath.section] numberOfObjects]-1);
     BOOL isLastRow = indexPath.row > lastIndex;
     BOOL isComposing = buddy.chatStateValue == kOTRChatStateComposing;

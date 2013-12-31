@@ -136,7 +136,7 @@
     
     messageTextLabel.text = message.message;
     messageTextLabel.font = [UIFont systemFontOfSize:messageFontSize];
-   // messageTextLabel.textColor = [UIColor blackColor];
+    messageTextLabel.textColor = [UIColor redColor];
     CGSize messageTextLabelSize = [messageTextLabel sizeThatFits:CGSizeMake(MESSAGE_TEXT_WIDTH_MAX, CGFLOAT_MAX)];
     
     if (!message.isIncomingValue) { // right message
